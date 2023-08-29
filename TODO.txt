@@ -1,0 +1,8 @@
+#tidak ada tuk input product category
+
+#SO: input addres tidak muncul
+#SO: input salesman tidak muncul
+
+
+#BUG
+- SO:product lookup pilohan tidak bisa masuk ke grid

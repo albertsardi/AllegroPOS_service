@@ -1,0 +1,58 @@
+DELIMITER $$
+
+CREATE
+    PROCEDURE `dba_timurjayanew`.`getProductQty`(IN PCode VARCHAR(50), IN asDate VARCHAR(20))
+    BEGIN
+	DECLARE TotalIn,TotalOut,Total DOUBLE;
+	-- get IN stock
+	SELECT SUM(Qty) INTO TotalIn FROM transhead th INNER JOIN transdetail td ON th.TransNo=td.TransNo WHERE ProductCode=PCode AND transdate<=asDate AND qty>0;
+	
+	-- get OUT stock
+	SELECT ABS(SUM(Qty)) INTO TotalOut FROM transhead th INNER JOIN transdetail td ON th.TransNo=td.TransNo WHERE ProductCode=PCode AND transdate<=asDate AND qty<0;
+
+	SET Total = TotalIn-TotalOut;
+	SELECT TotalIn,TotalOut,Total; 
+    END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE
+    PROCEDURE `dba_timurjayanew`.`getAccountAmount`(IN sAccNo VARCHAR(50), IN asDate VARCHAR(20))
+    BEGIN
+	DECLARE TotalIn,TotalOut,Total DOUBLE;
+	-- get IN amount
+	SELECT IFNULL(ABS(SUM(Amount)),0) INTO TotalIn FROM journal WHERE AccNo=sAccNo AND JRdate<=asDate AND Amount>0;
+	
+	-- get OUT amount
+	SELECT IFNULL(ABS(SUM(Amount)),0) INTO TotalOut FROM journal WHERE AccNo=sAccNo AND JRdate<=asDate AND Amount<0;
+
+	SET Total = TotalIn-TotalOut;
+	SELECT TotalIn,TotalOut,Total; 
+    END$$
+DELIMITER ;
+
+
+DELIMITER $$
+
+DELIMITER $$
+
+CREATE
+    PROCEDURE `dba_timurjayanew`.`getCustomerSupplierBalance`(IN sAccCode VARCHAR(50), IN asDate VARCHAR(20))
+    
+    BEGIN
+    DECLARE TotalInv,TotalPayment,TotalReturn DOUBLE; 
+    
+    SELECT IFNULL(SUM(Total),0) INTO TotalInv FROM transhead WHERE AccCode=sAccCode AND Transdate<=asDate AND (LEFT(TransNo,2) IN ('SI','IN'));
+
+    SELECT IFNULL(SUM(Total),0) INTO TotalPayment FROM transpaymenthead WHERE AccCode=sAccCode AND Transdate<=asDate;
+    
+    SELECT IFNULL(SUM(Total),0) INTO TotalReturn FROM transhead WHERE AccCode=sAccCode AND Transdate<=asDate AND LEFT(TransNo,2)='SR';	
+    
+    SELECT TotalInv,TotalPayment,TotalReturn; 
+
+    END$$
+
+DELIMITER ;

@@ -1,0 +1,266 @@
+<?php
+
+
+function cimage($image, $alt='') {
+    $xx=asset($image);
+    return "<img src='$xx' alt='$alt'>";
+}
+
+class HTML
+{
+    public static function image($image, $alt='') {
+        $xx=asset($image);
+        return "<img src='$xx' alt='$alt'>";
+    }
+
+    
+}
+
+
+
+
+#------------------------------------------------
+#- Form Helper Functon
+#- (c) 2019 Albert (albertsardi@gmail.com)
+#------------------------------------------------
+class Form
+{
+	public static $form_data=null;
+
+	public static function hidden($name, $value) {
+        echo "<input type='hidden' name='$name' value='$value'>";
+	}
+	// public static function text($name, $label, $other) {
+	// 	$v= 'value';
+	// 	echo "<div class='form-group row'>
+    //             <label for='input$name' class='col-sm-3 col-form-label'>$label</label>
+    //             <div class='col-sm-9'>".
+    //                 "<input class='form-control' autocomplete='off' ".$this->parse_form_attributes($name, $defaults).$this->_attributes_to_string($other)." value='$v'>
+    //                 // "<input class='form-control' autocomplete='off'  value='$v'>".
+    //             "</div>
+    //         </div>";
+    // }
+    public static function text($name, $label, $value='', $other=[]) {
+      if(is_array($value)) {
+            $other=$value;
+            $value='';
+		}
+		$value= self::_get_value($name);
+		echo "<div class='form-group row'>
+                <label for='input$name' class='col-sm-3 col-form-label'>$label</label>
+                <div class='col-sm-9'>
+					<input name='$name' value='$value' type='text' class='form-control' autocomplete='off' ".
+						self::_attributes_to_string($other).">
+                </div>
+				</div>";
+	}
+	public static function number($name, $label, $value=0, $other=[]) {
+		if(is_array($value)) {
+			$other=$value;
+			//$value=$other['value'];
+			$value='';
+		}
+		//$value=!is_null(self::$form_data)?self::$form_data->$name:0;
+		$value= self::_get_value($name, 0);
+		echo "<div class='form-group row'>
+					<label for='input$name' class='col-sm-3 col-form-label'>$label</label>
+					<div class='col-sm-9'>
+						  <input name='$name' value=$value type='numeric' class='form-control' autocomplete='off' ".
+							  self::_attributes_to_string($other).">
+					</div>
+			 	</div>";
+	}
+	public static function combo($name, $label, $list = [], $other = []) {
+		//$post = (array) Config::get('post');
+		//$value = isset($post[$name])?$post[$name]:'';
+		$v= '';
+		$slist = "<option> - </option>";
+		if (count($list) > 0) {
+			for ($a = 0; $a < count($list); $a++) {
+				$v1 = $list[$a]; //dd($v1);
+				$v2 = $list[$a]; //dd($v2);
+				if ($v == $v1) {
+					$slist .= "<option value='$v1' selected>" . $v2 . "</option>";
+				} else {
+					$slist .= "<option value='$v1'>" . $v2 . "</option>";
+				}
+			}
+		}
+		echo "<div class='form-group row'>
+						<label for='input$name' class='col-sm-3 col-form-label'>$label</label>
+						<div class='col-sm-9'>
+							<select name='$name' class='form-control'>
+							$slist
+							</select>
+						</div>
+					</div>";
+	}
+	public static function select($name, $label, $list = [], $other = []) {
+		//$post = (array) Config::get('post');
+		//$value = isset($post[$name])?$post[$name]:'';
+		$v= $value= self::_get_value($name, 0);
+		$slist = "<option> - </option>";
+		if (count($list) > 0) {
+			for ($a = 0; $a < count($list); $a++) {
+				$v1 = $list[$a]; //dd($v1);
+				$v2 = $list[$a]; //dd($v2);
+				if ($v == $v1) {
+					$slist .= "<option value='$v1' selected>" . $v2 . "</option>";
+				} else {
+					$slist .= "<option value='$v1'>" . $v2 . "</option>";
+				}
+			}
+		}
+		echo "<div class='form-group row'>
+						<label for='input$name' class='col-sm-3 col-form-label'>$label</label>
+						<div class='col-sm-9'>
+							<select name='$name' class='form-control select2'>
+							$slist
+							</select>
+						</div>
+					</div>";
+	}
+	public static function date($name, $label, $other=[]) {
+		$v= 'value';
+		echo "<div class='form-group row'>
+                <label for='input$name' class='col-sm-3 col-form-label'>$label</label>
+                <div class='col-sm-9'>".
+					"<input name='$name' value='{{old($name)}}' type='text' class='form-control' autocomplete='off' ".
+						self::_attributes_to_string($other).">
+                </div>
+            </div>";
+	}
+	public static function checkbox($name, $label, $other=[]) {
+      $value= self::_get_value($name, 0);
+      $ck='';
+      if($value==1 or $value) $ck='checked';
+		echo "<div class='form-group row'>
+					<div class='col-sm-9 offset-sm-3'>
+						<div class='form-check'>
+						<input class='form-check-input' type='checkbox' $ck id='ck$name'>
+                  <label class='form-check-label' for='ck$name'>$label</label>
+						</div>
+                  </div>
+                  </div>";
+	}
+	public static function textwlookup($name, $label, $modal, $other=[]) {
+		//return '[]';
+		//$post=(array)Config::get('post');
+		//$value= isset($post[$name])?$post[$name]:'';
+		$value= self::_get_value($name, false);
+    	//$other['modal']='#'.$other['modal'];
+		echo "<div class='form-row align-items-center'>
+               <div class='col-sm-3'>
+               <label>$label</label>
+               </div>
+               <div class='col-sm-4 my-1'>
+               <div class='input-group'>
+               <input name='$name' type='text' value='$value' class='form-control' placeholder='input here'>
+                  <div class='input-group-prepend'>
+                     <button id='$name-lookup' name='$name-lookup' type='button' target-modal='$modal' class='btn btn-outline-secondary btnlookup'><i class='fa fa-search'></i></button>
+                  </div>
+               </div>
+               </div>
+               <div class='col-auto my-1'>
+                  <label name='$name-val2' class='form-label' for='autoSizingCheck2'>
+                     <i>blank</i>
+                  </label>
+               </div>
+            </div>";
+	}
+	public static function setData($dat) {
+		//global $form_data;
+		//$form_data['Code'] = $dat['Code'];
+		//$this->form_data=$dat;
+		self::$form_data=$dat;
+		// dd($dat);
+	}
+
+	
+	private static function _attributes_to_string($attributes)
+	{
+		if (empty($attributes))
+		{
+			return '';
+		}
+		if (is_object($attributes))
+		{
+			$attributes = (array) $attributes;
+		}
+		if (is_array($attributes))
+		{
+			$atts = '';
+			foreach ($attributes as $key => $val)
+			{
+				$atts .= ' '.$key.'="'.$val.'"';
+			}
+			return $atts;
+		}
+		if (is_string($attributes))
+		{
+			return ' '.$attributes;
+		}
+		return FALSE;
+	}
+	private static function _get_value($name, $defValue='') {
+		if(isset(self::$form_data->$name)) {
+			return !is_null(self::$form_data)?self::$form_data->$name:$defValue;
+		} else {
+			return $defValue;
+		}
+	}
+    
+}
+
+#------------------------------------------------
+#- Modal Functon
+#- (c) Albert
+#------------------------------------------------
+class Modal
+{
+   public static function open($name, $label, $size="modal-lg", $other = "") {
+      if($other!='') $other=`style='$other'`;
+      echo "<div class='modal fade' id='modal-$name' >
+               <div class='modal-dialog $size'>
+                  <div class='modal-content' $other>
+                     <div class='modal-header'>
+                     <h5 class='modal-title'>$label</h5>
+                     <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                        <span aria-hidden='true'>&times;</span>
+                     </button>
+                     </div>
+                     <div class='modal-body'>";
+   }
+   public static function close($other= "") {
+      echo "</div>
+                  <div class='modal-footer'>
+                  <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+                  <button type='button' class='btn btn-primary'>Save changes</button>
+                  </div>
+               </div>
+            </div>
+            </div>";
+   }
+}
+
+#------------------------------------------------
+#- Card Functon
+#- (c) Albert
+#------------------------------------------------
+class Card
+{
+	public static function open($name='', $label='', $opt='') {
+		if ($opt != '') $opt = "style='$opt'";
+		$h = "<div class='card mb-3' id='$name'>";
+		if ($label != '') $h.= "<div class='card-header'>
+									<h3><i class='fa fa-check-square-o'></i> $label </h3>
+								</div>";
+		$h.="<div class='card-body' $opt>";
+		return $h;
+	}
+	public static function close($other = "") {
+		$footer = '';
+		if($other!='') $footer="<div class='card-footer'>$other</div>";
+		return "</div>$footer</div>";
+	}
+}
