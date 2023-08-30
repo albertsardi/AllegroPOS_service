@@ -64,7 +64,7 @@
                     var res=JSON.parse(resp); 
                     //alert(res.status);
                     res=res.data;
-                    ////console.log(res);
+                    //console.log(res);
                     $.each(res, function( f, v ) {
                         $("input[name='"+f+"']").val(v);
                     })
@@ -88,7 +88,7 @@
                   data: formdata,
                   success:function(res){
                      alert(res.success);
-                     //console.log(res.data);
+                     console.log(res.data);
                   }
                });
 	         });
@@ -97,20 +97,20 @@
                e.preventDefault();
                var url='http://localhost:500/api/datasave_product';
                Ajax_post(url, 'formData');
-               //console.log(res);
+               console.log(res);
 	         });*/
 
             
             /*var dataSource= "http://localhost:8000/ajax_getProduct/C-11";
             $.getJSON(dataSource, function(data, status) {
                 for(var row=0;row<data.length;row++) {
-                    //console.log(data);
+                    console.log(data);
                 }
             })  */
             
             //cmSave click
             //$('button#cmxSave').click(function() {
-                ////console.log('Saving ....');
+                //console.log('Saving ....');
                 /*var dialog = bootbox.dialog({
                     message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>Saving, Please wait ...</p>',
                     closeButton: false
@@ -133,12 +133,12 @@
                      type: 'POST', 
                      dataType: 'json',
                      success: function (e) {
-                        //console.log(JSON.stringify(e));
+                        console.log(JSON.stringify(e));
                         app.locals='OK'
                         return 'OK'
                      },
                      error:function(e){
-                        //console.log(JSON.stringify(e));
+                        console.log(JSON.stringify(e));
                         //return JSON.stringify(e)
                         return 'ERROR'
                      }

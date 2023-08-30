@@ -13,9 +13,6 @@
     <link href="{{ asset('assets/plugin/select2/select2.min.css') }}" rel="stylesheet" type="text/css" >
     <link href="{{ asset('assets/plugin/select2/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css" >
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" type="text/css" >
-
-    <link rel="stylesheet" href="{{ asset('assets/plugin/ag-grid/styles/ag-grid.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/plugin/ag-grid/styles/ag-theme-alpine.css') }}">
     <!-- END CSS for this page -->
 </head>
 
@@ -60,8 +57,7 @@
 									<h3>
 										<i class="fa fa-table"></i> Data list
 										<div class='float-right'>
-											{{-- <button id="cmNew" type="button" class="btn btn-primary btn-sm btn-submit">New</button> --}}
-                                            <a href='{{ url($jr.'/edit/new') }}' class="btn btn-primary btn-sm btn-submit">New</a>
+											<button id="cmNew" type="button" class="btn btn-primary btn-sm btn-submit">New</button>
                                             <a href='{{ url('datalist/'.$jr.'/pdf-usingChromeheadless') }}' class="btn btn-primary btn-sm btn-submit">Print</a>
 											{{-- <button id="cmExportExcel" type="button" class="btn btn-primary btn-sm btn-submit">to Excel</button> --}}
 											<a href='{{ url('datalist/'.$jr.'/excel') }}' class="btn btn-primary btn-sm btn-submit">to Excel</a>
@@ -70,12 +66,9 @@
 									</h3>
 								</div>
 								<div class="card-body">
-                            <table id="example1" class="table table-striped table-sm table-hover display w-100">
-					            {!! $grid !!}
+                            <table id="example1" class="table table-bordered table-hover display w-100">
+					                  {!! $grid !!}
                             </table>
-                            xxxxxxxxxxxxxxxx
-                            <div id="xgrid" class="ag-theme-alpine w-100 my-2" style="height: 300px;"></div>
-                            yyyyyyyyyyyyyyyyy
                             <!--<nav aria-label="Page navigation example">
                                 <ul class="pagination">
                                     <li class="page-item"><a class="page-link" href="#">Previous</a></li>
@@ -113,61 +106,8 @@
 <script src="{{ asset('assets/js/fastclick.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/plugin/select2/select2.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/pikeadmin.js') }}" type="text/javascript"></script>
-
-<script src="{{ asset('assets/plugin/ag-grid/ag-grid-community.min.noStyle.js') }}" type="text/javascript"></script>
 <script>
 // START CODE FOR BASIC DATA TABLE
-var xdata = <?php echo $data;?>;
-            {{-- <?php dump($data);?> --}}
-            const gridOptions = {
-                columnDefs: [
-                    { field: 'CatName', rowGroup: true, hide: false },
-                    { field: 'AccNo', rowGroup: false, hide: false },
-                    { field: 'AccName', rowGroup: true, hide: true },
-                    {
-                    field: 'Bal',
-                        aggFunc: (params) => {
-                            console.log(params)
-                            let sum = 0;
-                            params.values.forEach((value) => (sum += value));
-                            return sum;
-                        },
-                    },
-                ],
-                xxcolumnDefs: [
-                    { field: "AccNo", headerName: 'AccNo', width: 150 },
-                    { field: "AccName", headerName: 'AccName', width: 150 },
-                    { field: "Bal", headerName: 'Bal', width: 150 },
-                ],
-                //rowData: xdata,
-                defaultColDef: {
-                    flex: 1,
-                    minWidth: 100,
-                    sortable: true,
-                    resizable: true,
-                },
-                autoGroupColumnDef: {
-                    minWidth: 200,
-                },
-                sideBar: true,
-                animateRows: true,
-            }
-            //var xgd =  document.querySelector('#xgrid');
-            //new agGrid.Grid(xgd, gridOptions);
-
-            // setup the grid after the page has finished loading
-            alert('xxxxyyyy');
-            document.addEventListener('DOMContentLoaded', function () {
-                alert('ddddd');
-                var gridDiv = document.querySelector('#xgrid');
-                new agGrid.Grid(gridDiv, gridOptions);
-                //fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-                fetch('http://localhost/lav7_PikeAdmin_multi/api/mastercoa')
-                    .then((response) => response.json())
-                    .then((data) => gridOptions.api.setRowData(data));
-            });
-
-
     $(document).ready(function() {
         var fnum    = $.fn.dataTable.render.number(',','.',0,'')
         var fcur    = $.fn.dataTable.render.number(',','.',0,'Rp ')
@@ -185,7 +125,7 @@ var xdata = <?php echo $data;?>;
         var factive = function(data) {
             if (data.Active==1 || data.ActiveProduct==1) return `<span class="badge badge-success rounded"> <i class="fa fa-check" aria-hidden="true"></i> Active </span>`;
             return `<span class="badge badge-danger rounded"> <i class="fa fa-check" aria-hidden="true"></i> Not active </span>`;
-        }
+        }   
    var jr='{{$jr}}';
    var opt={
       //processing: true,
@@ -194,23 +134,16 @@ var xdata = <?php echo $data;?>;
       pagingType: "full_numbers",
       pageLength: 10,
    }
-   alert(jr);
-    //dd(json_encode($data));
-
-
-
-
+   //alert(jr);
     switch(jr) {
          case 'customer':
          case 'supplier':
             $('#example1').DataTable({
                 //ajax:"{{$_url}}",
                 data: <?php echo $data;?>,
-                //data: <?php echo json_encode($data);?>,
                 columns: [
                     { data: null,
                         render: function (data, type, row) {
-                            ////console.log(data)
                             if (jr=='customer') {
                                 return "<a href='{{ url('/customer/edit') }}/"+data['id']+"'>"+data['AccName']+"</a>";
                             } else {
@@ -225,27 +158,27 @@ var xdata = <?php echo $data;?>;
                     { data: 'Bal', "className":'col-number', render: fcur },
                     { data : null, render: factive },
                 ]
-            });
-            break; 
+            }); 
+            break;
         case 'product': //create
             $('#example1').DataTable({
                 data: <?php echo $data;?>,
                 columns : [
                     { data: null,
                         render: function (data, type, row) {
-                            return "<a href='{{ url('/product/edit') }}/"+data['id']+"'>"+data['Code']+"</a>";
+                            return "<a href='{{ url('/product/edit') }}/"+data['id']+"'>"+data['Name']+"</a>";
                         }
                     },
                     { data : "Name" },
                     { data : "UOM" },
                     { data : "Category" },
-                    { data : 'Qty', "className":'col-number', render: fnum },
+                    { data : 'Qty', "className":'col-number', render: fnum }, 
                     { data : null, render: factive },
-                ]
+                ] 
             });
             break;
-        case 'xcoa':
-            /*$('#example1').DataTable({
+        case 'coa':
+            $('#example1').DataTable({
 					//ajax:"{{$_url}}",
                     data: <?php echo $data;?>,
 					columns: [
@@ -263,58 +196,7 @@ var xdata = <?php echo $data;?>;
                             }
                         },
 					]
-            }); */
-            var xdata = <?php echo $data;?>;
-            {{-- <?php dump($data);?> --}}
-            const gridOptions = {
-                columnDefs: [
-                    { field: 'AccNo', rowGroup: true, hide: true },
-                    { field: 'AccName', rowGroup: true, hide: true },
-                    {
-                    field: 'Bal',
-                        aggFunc: (params) => {
-                            console.log(params)
-                            let sum = 0;
-                            params.values.forEach((value) => (sum += value));
-                            return sum;
-                        },
-                    },
-                ],
-                xxcolumnDefs: [
-                    { field: "AccNo", headerName: 'AccNo', width: 150 },
-                    { field: "AccName", headerName: 'AccName', width: 150 },
-                    { field: "Bal", headerName: 'Bal', width: 150 },
-                ],
-                //rowData: xdata,
-                defaultColDef: {
-                    flex: 1,
-                    minWidth: 100,
-                    sortable: true,
-                    resizable: true,
-                },
-                autoGroupColumnDef: {
-                    minWidth: 200,
-                },
-                sideBar: true,
-                animateRows: true,
-            }
-            //var xgd =  document.querySelector('#xgrid');
-            //new agGrid.Grid(xgd, gridOptions);
-
-            // setup the grid after the page has finished loading
-            alert('xxxx');
-            document.addEventListener('DOMContentLoaded', function () {
-                alert('ddddd');
-                var gridDiv = document.querySelector('#xgrid');
-                new agGrid.Grid(gridDiv, gridOptions);
-                //fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-                fetch('http://localhost/lav7_PikeAdmin_multi/api/mastercoa')
-                    .then((response) => response.json())
-                    .then((data) => gridOptions.api.setRowData(data));
-                    alert(data);
             });
-
-
             break;
         case 'bank':
             $('#example1').DataTable({

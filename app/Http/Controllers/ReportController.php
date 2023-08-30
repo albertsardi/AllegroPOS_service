@@ -215,13 +215,11 @@ class ReportController extends Controller
 		$JR="PI";
 		switch ($reporttype) {
 		case 'report20': #Laporan Pembelian
-        	$query = "SELECT transdate,th.transno,th.acccode,accname,address as deliveryto,total,IFNULL(SUM(amountpaid),0)AS paid,total-IFNULL(SUM(amountpaid),0)AS unpaid 
-                        FROM transinvoice th
-                        LEFT JOIN transpaymentarap arap ON arap.invno=th.transno 
-                        LEFT JOIN masteraccountaddr addr ON addr.AccCode=th.AccCode 
-                        WHERE LEFT(th.transno,2)='$JR' and addr.DefAddr=1 
-						$sPeriod 
-                        GROUP BY transdate,transno,th.acccode,accname,deliveryto,total 
+        	$query = "SELECT transdate,transhead.transno,acccode,accname,deliveryto,total,IFNULL(SUM(amountpaid),0)AS paid,total-IFNULL(SUM(amountpaid),0)AS unpaid 
+                        FROM transhead 
+                        LEFT JOIN transpaymentarap ON transpaymentarap.invno=transhead.transno 
+                        WHERE LEFT(transhead.transno,2)='$JR' $sPeriod 
+                        GROUP BY transdate,transno,acccode,accname,deliveryto,total 
                         ORDER BY transdate 
                         $this->limit ";
         	$format = [["Date", 21, "C"],
@@ -238,11 +236,11 @@ class ReportController extends Controller
             $this->maketablepdf($dat, "Laporan Daftar Pembelian",$this->header1, "", $format, "L");
         	break;
     	case 'report21': #Laporan Hutang Supplier
-        	$query = "SELECT accname,transdate,th.transno,total,IFNULL(total-(SUM(amountpaid)),0)AS unpaid 
-                        FROM transinvoice th
-                        LEFT JOIN transpaymentarap arap ON arap.invno=th.transno 
-                        WHERE (LEFT(th.Transno,2) IN ('PI','PR')) $sPeriod 
-                        GROUP BY accname,transdate,th.transno,total
+        	$query = "SELECT accname,transdate,transhead.transno,total,IFNULL(total-(SUM(amountpaid)),0)AS unpaid 
+                        FROM transhead 
+                        LEFT JOIN transpaymentarap ON transpaymentarap.invno=transhead.transno 
+                        WHERE (LEFT(transhead.Transno,2) IN ('PI','PR')) $sPeriod 
+                        GROUP BY accname,transdate,transhead.transno,total
                         ORDER BY accname,transdate
                         $this->limit ";
                 $format = [["Customer", 50, "L"],
@@ -253,11 +251,12 @@ class ReportController extends Controller
 			$dat = json_decode(json_encode(DB::select($query) ), True); 
             $this->maketablepdf($dat, "Laporan Hutang Supplier",$this->header1, "", $format);
         	break;
+    	
         case 'report22': #Laporan Pembelian per Supplier
-        	$query = "SELECT accname,transdate,th.transno,productcode,productname,qty as Qty,uom,price,qty*price as amount 
-                        FROM transinvoice th
-                        INNER JOIN transdetail td on td.transno=th.transno 
-                        WHERE (left(th.Transno,2) in ('PI','PR')) $sPeriod 
+        	$query = "SELECT accname,transdate,transhead.transno,productcode,productname,sentqty as Qty,uom,price,sentqty*price as amount 
+                        FROM transhead 
+                        INNER JOIN transdetail on transdetail.transno=transhead.transno 
+                        WHERE (left(Transhead.Transno,2) in ('PI','PR')) $sPeriod 
                         ORDER BY Accname,transdate 
                         $this->limit ";
             $format = [["Supplier", 40, "C"],
@@ -323,7 +322,7 @@ class ReportController extends Controller
             $this->maketablepdf($dat, "Laporan Piutang per Pelanggan",$this->header1, "", $format);
             break;
     	case 'report32': #Laporan Penjualan per Pelanggan
-        	$query = "SELECT AccName,transdate,transhead.transno,productcode,productname,-qty as Qty,uom,price,-qty*price as amount,accname 
+        	$query = "SELECT AccName,transdate,transhead.transno,productcode,productname,-sentqty as Qty,uom,price,-sentqty*price as amount,accname 
                         FROM transhead 
                         INNER JOIN transdetail on transdetail.transno=transhead.transno 
                         WHERE (left(Transhead.Transno,2) in ('IN','SR')) $sPeriod 
@@ -384,7 +383,7 @@ class ReportController extends Controller
                     	["UOM", 15, "C"],
                     	["Avg Cost", 25, "N"],
                     	["Value", 30, "N"]];
-        	$query = "SELECT Code,Name,abs(sum(qty)) AS qty,masterproduct.uom,IFNULL(abs(SUM(cost)/SUM(qty)),0)AS avgCost,0 AS totAvgCost
+        	$query = "SELECT Code,Name,sum(SentQty) AS SentQty,masterproduct.uom,IFNULL(SUM(cost)/SUM(SentQty),0)AS avgCost,0 AS totAvgCost
                         FROM masterproduct
                         LEFT JOIN transdetail ON transdetail.productcode=masterproduct.code
                         LEFT JOIN transhead ON transhead.transno=transdetail.transno 
@@ -394,7 +393,7 @@ class ReportController extends Controller
 			$dat = json_decode(json_encode(DB::select($query) ), True); 
 			foreach($dat as $dt) {
                 $dt["avgCost"] = getProductAvgCost($dt["Code"], date('Y-m-d'));
-                $dt["totAvgCost"] = $dt['qty'] * $dt['avgCost'];
+                $dt["totAvgCost"] = $dt['SentQty'] * $dt['avgCost'];
             }
             $this->maketablepdf($dat, "Laporan Persediaan Barang",$this->header1, "", $format);
         	break;
@@ -406,7 +405,7 @@ class ReportController extends Controller
                         ["Description", 65, "L"],
                         ["Mutation", 25, "N"],
                         ["Balance", 30, "N"]];
-        	$query = "SELECT ProductCode,ProductName,Transdate,transdetail.transno,'Description','' as sqty,0 AS bal,qty 
+        	$query = "SELECT ProductCode,ProductName,Transdate,transdetail.transno,'Description','' as sqty,0 AS bal,SentQty 
                         FROM transdetail 
                         INNER JOIN transhead ON transhead.transno=transdetail.transno 
                         WHERE transdate<='$this->date2'
@@ -425,7 +424,7 @@ class ReportController extends Controller
                         ["Avg Cost", 20, "N"],
                         ["Sell/Buy Price", 25, "N"],
                         ["Value", 25, "N"]];
-        	$query = "SELECT ProductCode,ProductName,Transdate,transdetail.transno,'0' AS sqty,0 AS bal,cost,price,qty*price AS amount,qty 
+        	$query = "SELECT ProductCode,ProductName,Transdate,transdetail.transno,'0' AS sqty,0 AS bal,cost,price,SentQty*price AS amount,SentQty 
                         FROM transdetail 
                         INNER JOIN transhead ON transhead.transno=transdetail.transno 
                         WHERE transdate<='$this->date2'
@@ -662,14 +661,6 @@ class ReportController extends Controller
 		return $h;
 	}
 
-	function space($num) {
-		return str_repeat(' ', $num);
-	}
-	function fnum($num) {
-		$num=intval($num);
-		return number_format($num,0);	
-  	}
-
 	
 	
 	//TEST function 
@@ -718,6 +709,7 @@ class ReportController extends Controller
 		// $prince_options->setBaseurl("http://hello.com");                    // pretend URL when using document_content
 		$create_response = $docraptor->createDoc('d:/'.$doc);
 	}
+	
 }
 
 // function debet($v) {

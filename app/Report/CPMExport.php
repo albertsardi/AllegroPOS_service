@@ -14,7 +14,8 @@ class CPMExport extends \koolreport\KoolReport
 {
     use \koolreport\clients\Bootstrap;
     use \koolreport\export\Exportable;
-    use \koolreport\excel\ExcelExportable;
+    use \koolreport\cloudexport\Exportable;
+    // use \koolreport\excel\ExcelExportable;
     //We leave this blank to demo only
 
     function exportToExcel() {

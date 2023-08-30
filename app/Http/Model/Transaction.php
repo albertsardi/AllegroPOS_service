@@ -100,12 +100,6 @@ class Transaction extends Model
     return (!empty($dat))? $dat->Qty: 0;
   }
 
-  public static function getStock($id, $trandate=null) {
-      if ($transdate==null) $transdate = date('Y/m/d');
-      $data = Trans::where('ProductCode', $id)->get();
-      return (object)['status'=>'OK', 'data'=>$data];
-  }
-
 }
 
 

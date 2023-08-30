@@ -1,9 +1,2 @@
 #insert text box in grid
 https://www.c-sharpcorner.com/blogs/how-to-add-combobox-in-aggrid-or-edit-grid-coloumn-with-combobox
-
-#make coa list, contohnya
-https://www.ag-grid.com/javascript-data-grid/aggregation-custom-functions/
-https://www.youtube.com/watch?v=kM0RFOoPDXk
-
-domPDF tutorial
-https://www.youtube.com/watch?v=8eMBg6pBrVs

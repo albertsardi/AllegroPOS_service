@@ -7,15 +7,16 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use App\Report\MyReport;
-// use App\Http\Model\Common;
-// use App\Http\Model\Salesman;
+use App\Http\Model\Common;
+use App\Http\Model\Salesman;
 use App\Http\Model\Transaction;
 use App\Http\Model\Order;
-// use App\Http\Model\Delivery;
+use App\Http\Model\Delivery;
 use App\Http\Model\Invoice;
 use App\Http\Model\Expense;
-// use App\Http\Model\Warehouse;
-// use App\Http\Model\Journal;
+use App\Http\Model\Warehouse;
+use App\Http\Model\CustomerSupplier;
+use App\Http\Model\Journal;
 use Codedge\Fpdf\Fpdf\Fpdf; //for using Fpdf
 use App\Report\Tpdf;
 use Session;
@@ -24,7 +25,191 @@ class TransController extends MainController {
 
 	public $addNew = null;
 	
-	
+	function translist($jr) {
+		//show view
+		switch($jr) {
+			case 'DO':
+				// $dat = Delivery::selectRaw("transdelivery.TransNo,transdelivery.TransDate,oh.TransNo as OrderNo,oh.TransDate as OrderDate,oh.AccName,transdelivery.Total,transdelivery.Status,transdelivery.CreatedBy,transdelivery.CreatedDate,transdelivery.id")
+				// 		->leftJoin('orderhead as oh', 'oh.TransNo', '=', 'transdelivery.OrderNo')
+				// 		//->orderBy('transdelivery.TransDate', 'DESC')
+				// 		->orderBy('transdelivery.TransNo', 'DESC')
+				// 		->get();
+				$sql = "select * from transhead where left(TransNo,2)='DO' 
+				";
+				$dat = DB::select(DB::raw($sql));
+				foreach($dat as $dt) {
+					$dt->Status = $this->gettransstatus($jr, $dt->Status);   
+				}
+				//  return $dat;
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['DO #', 'DO Date', 'Order #', 'Date',  'Supplier', 'Total',' Status', 'Created By', 'Created Date'],
+					'caption'   => $this->makeCaption($jr),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+				];
+				//return $data;
+				break;
+			case 'PI':
+			case 'SI':
+			case 'IN':
+			// 	//"TransNo,TransDate,AccName,Total,'Status',CreatedBy"
+				$dat = DB::table('transinvoice as ti')->selectRaw("ti.TransNo,ti.TransDate,ti.OrderNo,AccName,ti.Total,ti.CreatedBy,ti.CreatedDate,ti.Status,ti.id")
+								->leftJoin('orderhead as oh', 'oh.TransNo', '=', 'ti.OrderNo')
+								->orderBy('ti.TransDate', 'desc')
+								->get();
+				foreach($dat as $dt) {
+					$dt->Status = $this->gettransstatus($jr, $dt->Status);   
+				}
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['Transaction #', 'Date', 'Customer', 'Total', ' Status', 'Created By', 'Created Date'],
+					'caption'   => $this->makeCaption($jr),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+					];
+				break;
+			case 'PO':
+				$dat = Order::whereRaw("left(TransNo,2)='$jr' ")->get();
+				foreach($dat as $dt) {
+					$dt->Status = $this->gettransstatus($jr, $dt->Status);   
+				}
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['Transaction #', 'Date', 'Department', 'Remarks', 'Requester', 'Total', 'Status', 'CreatedBy', 'CreatedDate', 'UpdateDate'],
+					'caption'   => $this->makeCaption($jr),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+					];
+				//return $data;
+				break;
+			case 'SO':
+				$dat = Order::whereRaw("left(TransNo,2)='$jr' ")->orderBy('TransDate', 'desc')->get();
+				foreach($dat as $dt) {
+					$dt->Status = "<div class='text-success'>".$this->gettransstatus($jr, $dt->Status).'</div>';   
+				}
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['Transaction #', 'Date', 'Customer', 'Remarks', 'Total', 'Status', 'CreatedBy', 'CreatedDate', 'UpdateDate'],
+					'caption'   => $this->makeCaption($jr),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+					];
+				//return $data;
+				break;
+
+			// case 'PI-unpaid':
+			// 	$sql = `SELECT *,(Total-TotalPaid)as Unpaid FROM transhead
+			// 				WHERE (LEFT(TransNo,2)='PI') AND (Total-TotalPaid<>0) AND AccCode='${req.params.id}'
+			// 				ORDER BY TransDate `;
+			// 	break;
+			// case 'SI-unpaid':
+			// 	$sql = `SELECT *,(Total-TotalPaid)as Unpaid FROM transhead
+			// 				WHERE (LEFT(TransNo,2)='IN') AND (Total-TotalPaid<>0) AND AccCode='${req.params.id}'
+			// 				ORDER BY TransDate `;
+			// 	break;
+			case 'EX':
+				// $sql = "SELECT *,AccName,abs(Amount)as Total FROM journal 
+				// 		LEFT JOIN mastercoa on mastercoa.AccNo=journal.AccNo 
+				// 		WHERE left(ReffNo,2)='EX' AND Amount<0 ";
+				// $dat = DB::select(DB::raw($sql));
+				$dat = DB::table('transexpense')->orderBy('TransDate')->get();
+				// dd($dat);
+				foreach($dat as $dt) {
+					// $dt->Status = "<div class='text-success'>".$this->gettransstatus($jr, $dt->Status).'</div>';   
+				}
+				//return $dat;
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['Transaction #', 'Date','Receiver', 'Payment by', 'Total', 'Status', 'Created By', 'Created Date'],
+					'caption'   => $this->makeCaption($jr),
+					'mAccount'  => json_encode(db::table('mastercoa')->select('AccNo','AccName','CatName')->get() ),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+				];
+				//dd($data);
+				//return $data;
+				break;
+			case 'CR':
+			case 'CD':
+				$sql = "SELECT ReffNo, JRdate, m.AccNo, JRdesc, abs(Amount) as Total FROM journal j
+						JOIN  mastercoa m ON m.AccNo=j.AccNo
+						WHERE left(ReffNo,2)='$jr' ";
+				$dat = DB::select(DB::raw($sql));
+				foreach($dat as $dt) {
+					$dt->Status = $this->gettransstatus($jr, $dt->Status);   
+				}
+				//return $dat;
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['Transaction #', 'Date', 'Account', 'Description', 'Total', 'Status', 'Created By', 'Created Date'],
+					'caption'   => $this->makeCaption($jr),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+				];
+				// var head= ['Transaction #', 'Date', 'Account', 'Description', 'Total'];
+				//return $data;
+				break;
+			// case 'CT':
+			// 	$sql = "SELECT * FROM journal WHERE left(ReffNo,2)='$jr' AND Amount>0`";
+			// 	//var head= ['Transaction #', 'Date', 'Description', 'Total'];
+			// 	break;
+			// case 'JR':
+			// 	if ($id == 'undefined') {
+			// 		$sql = "SELECT *,SUM(Amount)AS Total FROM journal WHERE LEFT(ReffNo,2)='GJ' AND Amount>0
+			// 			GROUP BY ReffNo ORDER BY JRDate ";
+			// 	} else {
+			// 		$sql = "SELECT * FROM journal WHERE ReffNo='${req.params.id}' ";
+			// 	}
+			// 	$sql = "SELECT *,SUM(Amount)AS Total FROM journal WHERE LEFT(ReffNo,2)='GJ' AND Amount>0
+			// 			GROUP BY ReffNo ORDER BY JRDate ";
+			// 	//var head= ['Transaction #', 'Date', 'Description', 'Total'];
+			// 	break;
+			// case 'JRdetail':
+			// 	$sql = "SELECT AccNo,JRdate,ReffNo,JRdesc,debet(Amount)as Debet,credit(Amount)as Credit FROM journal WHERE left(ReffNo,2)='JR' ";
+			// 	if($id!='undefined') $sql=$sql+"AND ReffNo='$id";
+			// 	$sql=$sql+"ORDER BY JRDate,ReffNo,Amount ";
+			// 	break;
+			// case 'PO':
+			// 	$sql = `SELECT *,'OPEN' as Status FROM orderhead WHERE left(TransNo,2)='${req.params.jr}' `;
+			// 	break;
+			case 'AR':
+			case 'AP':
+				$sql = "SELECT * FROM transpaymenthead WHERE left(TransNo,2)='$jr' ";
+				$dat = DB::select(DB::raw($sql));
+				foreach($dat as $dt) {
+					$dt->Status = $this->gettransstatus($jr, $dt->Status);   
+				}
+				$data = [
+					'jr'        => $jr,
+					'grid'      => ['Transaction #', 'Date', 'Account', 'Total', 'Status', 'Created By', 'Created Date'],
+					//'grid'      => ['Transaction #', 'Date', 'Account', 'Total', 'Created By'],
+					'caption'   => $this->makeCaption($jr),
+					'_url'      => env('API_URL').'/api/'.$jr,
+					'data'      => $dat,
+				];
+				//return $data;
+				break;
+			// //MANUFACTURE
+			// case 'MWO':
+			// 	//var head= ['Transaction #', 'Date', 'Section', 'Status'];
+			// 	//var title = "WOrking Order List"
+			// 	break;
+			// case 'MMR':
+			// 	//var head= ['Transaction #', 'Date', 'Work Order #', 'Memo'];
+			// 	//var title = "MMR List"
+			// 	break;
+			// case 'MPE':
+			// 	//var head = ['Transaction #', 'Date', 'Work Order #', 'Order Qty', 'Result Qty', 'Target', 'Memo'];
+			// 	//var title = "MPE List"
+			// 	break;
+			default:
+				return "no list from $jr";
+				break;
+		}
+		$data['grid'] = $this->makeTableList($data['grid']);
+		return view('translist', $data);
+	}
 
 	function makeTableList($caption) {
 		$head= '<th>'.implode('</th><th>',$caption).'</th>';
@@ -335,6 +520,42 @@ class TransController extends MainController {
 		if ($status==1) return APPROVED;
 	}
 
+	function selectData($arr) 
+	{
+		$out = [];
+		foreach($arr as $r) {
+			switch($r) {
+				case 'selPayment':
+					$cat = substr($r, 3);
+					$dat= Common::select('name2','name1')->where('category',$cat)->get();
+					break;
+				case 'selProduct':
+					$dat= Product::select('Code','Name')->get();
+					break;
+				case 'selCustomer':
+					$dat= CustomerSupplier::select('AccCode','AccName')->where('AccType','C')->get();
+					break;
+				case 'selSupplier':
+					$dat= CustomerSupplier::select('AccCode','AccName')->where('AccType','S')->get();
+					break;
+				case 'selSalesman':
+					$dat= Salesman::select('Code','Name')->get();
+					break;
+				case 'selWarehouse':
+					$dat= Warehouse::select('warehouse','warehousename')->get();
+					break;
+			}
+			$dat = $dat->toArray();
+			$dat2=[];
+			foreach($dat as $dt) {
+				$key = array_keys($dt);
+				$dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[1]] ];
+			}
+			$out[$r] = $dat2;
+		}
+		return (object)$out;
+	}
+
 	function transedit($jr, $id)
 	{
         $data = [
@@ -347,46 +568,61 @@ class TransController extends MainController {
 		if ($jr=='SI') $jr='IN';   
 
 		if ($jr == 'PO') {
-			$modal = $this->modalData(['mCat', 'mSupplier','mProduct','mWarehouse']);
+			$modal = ['mCat', 'mSupplier','mProduct','mWarehouse'];
 			$select = $this->selectData(['selSupplier','selWarehouse']);
 			$view = 'form-po';
 			$res = Order::Get($jr, $id);
         }
 		if ($jr == 'PI') {
-			$modal = $this->modalData(['mCat', 'mSupplier', 'mProduct', 'mPurchaseQuotation', 'mPayType', 'mSalesman', 'mWarehouse']);
-			$select = $this->selectData(['selSupplier','selWarehouse']);
-			$view = 'form-pi';
+			$modal = ['mCat', 'mSupplier', 'mProduct', 'mPurchaseQuotation', 'mPayType', 'mSalesman', 'mWarehouse'];
+			$view = 'form-buy';
 			$res = Invoice::Get($jr, $id);
 		}
 		if ($jr == 'SO') {
-			$modal = $this->modalData(['mCustomer', 'mProduct', 'mWarehouse', 'mPayType', 'mSalesman', 'mAddr']);
+			$modal = ['mCustomer', 'mProduct', 'mWarehouse', 'mPayType', 'mSalesman', 'mAddr'];
 			$select = $this->selectData(['selCustomer','selWarehouse', 'selPayment', 'selSalesman']);
 			$button	= ['cmApprove', 'cmCreateInv'];
 			$view = 'form-SO';
 			$res = Order::Get($jr, $id);
 		}
 		if ($jr == 'DO') {
-			$modal = $this->modalData(['mCat', 'mCustomer', 'mProduct', 'mSO', 'mWarehouse']);
+			$modal = ['mCat', 'mCustomer', 'mProduct', 'mSO', 'mWarehouse'];
 			$select = $this->selectData(['selCustomer','selWarehouse', 'selPayment', 'selSalesman']);
 			$button = ['cmReadyToSent', 'cmDeliveryReceived'];
 			$view = 'form-do';
 			$res = Transaction::Get($jr, $id);
 		}
 		if ($jr == 'IN') {
-			$modal = $this->modalData(['mCat', 'mCustomer', 'mProduct', 'mAccount', 'mSO', 'mPayType', 'mWarehouse', 'mSalesman', 'mDO' ]);
+			$modal = ['mCat', 'mCustomer', 'mProduct', 'mAccount', 'mSO', 'mPayType', 'mWarehouse', 'mSalesman', 'mDO' ];
 			$select = $this->selectData(['selCustomer','selPayment']);
 			$view = 'form-si';
 			$res = Invoice::Get($jr, $id);
 		}
 		if ($jr == 'EX') {
-			$modal = $this->modalData(['mCat', 'mSupplier', 'mAccount']);
+			$modal = ['mCat', 'mSupplier', 'mAccount'];
 			$view = 'form-ex';
-			$res = Expense::Get($id);
-			
+			$res = Expense::Get($jr, $id);
 		}
 
-		// get modal data
-		if (isset($modal)) $data = array_merge($data, $modal);
+		// get modal
+		if(in_array('mCat', $modal)) $data['mCat'] = $this->DB_list('masterproductcategory', 'Category');
+		if(in_array('mCustomer', $modal)) $data['mCustomer'] = DB::table('masteraccount')->where('AccType', 'C')->get();
+		if(in_array('mSupplier', $modal)) $data['mSupplier'] = DB::table('masteraccount')->select('AccCode','AccName','Category')->where('AccType', 'S')->get();
+		if(in_array('mProduct', $modal)) $data['mProduct'] = json_encode(DB::table('masterproduct')->select('Code','Name','Category')->where('ActiveProduct',1)->get());
+		if(in_array('mPurchaseQuotation', $modal)) $data['mPurchaseQuotation'] = ['Raw material','Finish good'];
+		if(in_array('mWarehouse', $modal)) $data['mWarehouse'] = $this->DB_list('masterwarehouse', ['warehouse','warehousename']); //DB::table('masterwarehouse')->select('warehouse','warehousename')->get(),
+		// if(in_array('mPayType', $modal)) $data['mPayType'] =  $this->DB_list('common',['id','name1'], "category='Payment' "); //Common::getData('Payment')->data,
+		if(in_array('mPayType', $modal)) $data['mPayType'] =  DB::table('common')->select('id','name1')->where('category','Payment')->get(); //Common::getData('Payment')->data,
+		//if(in_array('mSalesman', $modal)) $data['mSalesman'] = $this->DB_list('mastersalesman', 'Name');
+		if(in_array('mSalesman', $modal)) $data['mSalesman'] = DB::table('mastersalesman')->select('Code','Name')->get();
+		if(in_array('mAddr', $modal)) $data['mAddr'] = []; //json_encode(DB::table('masteraccount')->where('AccCode', 'C')->get() ),
+		if(in_array('mCat', $modal)) $data['mCat'] = $this->DB_list('masterproductcategory', 'Category');
+		if(in_array('mAccount', $modal)) $data['mAccount'] = json_encode(db::table('mastercoa')->select('AccNo','AccName','CatName')->get() );
+		if(in_array('mDO', $modal)) $data['mDO'] = [];
+		if(in_array('mSO', $modal)) $data['mSO'] = DB::table('orderhead')->select('TransNo','TransDate','Total','AccCode','AccName','DeliveryTo')
+									->whereRaw("left(TransNo,2)='SO' ")->where("Status", "1")
+									->orderBy('TransDate', 'desc')->get();
+			
 
 		// get select data
 		$data['select'] = isset($select)? $select:[];

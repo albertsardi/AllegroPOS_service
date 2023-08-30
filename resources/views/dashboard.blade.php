@@ -177,13 +177,16 @@
 								<table id="example1" class="table table-bordered table-responsive-xl table-hover display">
 									<thead>
 										<tr>
-											<th>Account #</th>
-											<th>Account Name</th>
-											<th>Amount</th>
+											<th>Name</th>
+											<th>Position</th>
+											<th>Office</th>
+											<th>Age</th>
+											<th>Start date</th>
+											<th>Salary</th>
 										</tr>
 									</thead>													
 									<tbody>
-										<!--<tr>
+										<tr>
 											<td>Tiger Nixon</td>
 											<td>System Architect</td>
 											<td>Edinburgh</td>
@@ -326,17 +329,8 @@
 											<td>27</td>
 											<td>2011/01/25</td>
 											<td>$112,000</td>
-										</tr> -->
-										<?php
-											foreach($tableexp_data as $dt) {
-												echo "<tr>
-														<td>$dt[accno]</td>
-														<td>$dt[accname]</td>
-														<td align='right'>Rp. ".number_format($dt['total'], 2)."</td>
-													</tr>";
-											}
-										?>
-									</tbody> 
+										</tr>
+									</tbody>
 								</table>
 							</div>														
 						</div><!-- end card-->					
@@ -390,7 +384,7 @@
 				delay: 10,
 				time: 600
 			});
-		} );		 
+		} );		
 	</script>
 	
 	<script>
@@ -518,7 +512,7 @@
 			dataType: 'json'
 	})
 	.done(function(data){
-        //console.log(data);
+        console.log(data);
         lineChart1.data.datasets[0].data=data[0];
         lineChart1.data.datasets[1].data=data[1];
         lineChart1.update();
@@ -531,7 +525,7 @@
 			dataType: 'json'
 	})
 	.done(function(data){
-        //console.log(data);
+        console.log(data);
         lineChart2.data.datasets[0].data=data[0];
         lineChart2.data.datasets[1].data=data[1];
         lineChart2.update();
@@ -561,7 +555,7 @@
 
     //test
     /*window.onbeforeunload = function () {
-        //console.log("Do you really want to close?");
+        console.log("Do you really want to close?");
         return "Do you really want to close?";
     };*/
 

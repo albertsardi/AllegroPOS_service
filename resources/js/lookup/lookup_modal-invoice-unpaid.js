@@ -27,8 +27,8 @@ $(function () {
 
             // lookupRow = $(this).attr('rowIdx');
             selRow = mInvUnpaid[ $(this).attr('rowIdx') ];
-            // //console.log(selRow)
-            ////console.log(selRowIdx)
+            // console.log(selRow)
+            //console.log(selRowIdx)
 
             //gridOptions.api.setRowData(mydata);
             //$('#modal-invoice-unpaid').modal('hide')

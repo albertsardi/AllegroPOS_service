@@ -62,10 +62,11 @@
 										<i class="fa fa-table"></i> Trans list
 										<div class='float-right'>
 											<?php
-												$link = "edit/$jr/";
+												$link = '/trans-edit/';
+												if (in_array($jr, ['AR','AP'])) $link = '/payment/edit/';
 											?>
 											{{-- <button id="cmNew" type="button" class="btn btn-primary btn-sm btn-submit">New</button> --}}
-											<a href='{{ url($link.'new') }}' class="btn btn-primary btn-sm">New</a>
+											<a href='{{ url($link.$jr.'/NEW') }}' class="btn btn-primary btn-sm">New</a>
 											<a href='{{ url('translist/'.$jr.'/pdf_usingTPDF') }}' class="btn btn-primary btn-sm">Print</a>
                                             <a href='{{ url('translist/'.$jr.'/excel') }}' class="btn btn-primary btn-sm btn-submit">to Excel</a>
                                             <a href='{{ url('translist/'.$jr.'/pdf') }}' class="btn btn-primary btn-sm btn-submit">to PDF</a>
@@ -73,7 +74,7 @@
 									</h3>
 								</div>
 								<div class="card-body">
-                            <table id="example1" class="table table-striped table-sm table-hover display w-100">
+                            <table id="example1" class="table table-bordered table-hover display w-100">
 					                  {!! $grid !!}
                             </table>
   								</div><!-- end card-->
@@ -127,13 +128,11 @@
                                     return '<span style="color:darkgreen">'+ cur + number + '</span>';
                                 }
                             }    
-            	var fdate   = function (data, type, row) { 
-                                return (data)? moment(data).format('DD/MM/YYYY'):'-'; 
+            var fdate       = function (data, type, row) { 
+                                return moment(data).format('DD/MM/YYYY'); 
                             }
 			var jr='{{$jr}}';
-            {{-- <?php dd($data->toArray());?> --}}
-            <?php $xdat = (json_encode($data->toArray()));?>
-			var opt={
+            var opt={
                //processing: true,
                //serverSide: true,
                paging: true,
@@ -144,19 +143,18 @@
 				switch (jr) {
 					case 'DO':
 						$('#example1').DataTable({
-                     		//data: {!! json_encode($data) !!},
-							data: <?php echo $data;?>,
+                     		data: {!! json_encode($data) !!},
 							columns: [
 								{ data: null, 
 									render: function(data, type, row) {
-										//return "<a href='{{ url('/edit/'.$jr) }}/"+data['DONo']+">"+data['DONo']+"</a>";
-										return "<a href='{{ url('/edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
+										//return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['DONo']+">"+data['DONo']+"</a>";
+										return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
 									}
 								},
 								{ data: 'TransDate', width:200, render: fdate },
              					{ data: null,
 									render: function(data, type, row) {
-										return "<a href='{{ url('/edit/'.$jr) }}/"+data['OrderNo']+"'>"+data['OrderNo']+"</a>";
+										return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['OrderNo']+"'>"+data['OrderNo']+"</a>";
 									}
 								},
 								{ data: 'OrderDate', width:200, render: fdate },
@@ -172,15 +170,14 @@
 					case 'SI':
 					case 'IN':
 						$('#example1').DataTable({
-                        	//data: {!! json_encode($data) !!},
-							data: <?php echo $data;?>,
+                        	data: {!! json_encode($data) !!},
 							//scrollY: 400,
 							//deferRender: true,
 							//scroller: { loadingIndicator: true 	},
 							columns: [
 								{ data: null,
 									render: function(data, type, row) {
-										return "<a href='{{ url('/edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
+										return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
 									}
 								},
 								{ data: 'TransDate', width:200,title:'tanggal',render: fdate },
@@ -204,7 +201,7 @@
 							columns: [
 								{ data: null,
 									render: function(data, type, row) {
-										return "<a href='{{ url('/edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
+										return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
 									}
 								},
 								{ data: 'TransDate', width:200,title:'tanggal',
@@ -216,8 +213,8 @@
 								{ data: 'Total', className:'col-number', render: fcur },
 								{ data: 'Status'},
 								{ data: 'CreatedBy'},
-								{ data: 'CreatedDate', render: fdate},
-								{ data: 'UpdatedDate', render: fdate},
+								{ data: 'CreatedDate'},
+								{ data: 'UpdatedDate'},
 							],
 							dom: 'Bfrtip',
 							buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
@@ -225,16 +222,14 @@
 						break;
 					case 'SO':
 						$('#example1').DataTable({
-                        	//data: {!! json_encode($data) !!},
-                        	data: {!! $xdat !!},
+                        	data: {!! json_encode($data) !!},
 							//scrollY: 400,
 							//deferRender: true,
 							//scroller: { loadingIndicator: true 	},
 							columns: [
 								{ data: null,
 									render: function(data, type, row) {
-										console.log(data)
-										return "<a href='{{ url('/edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
+										return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
 									}
 								},
 								{ data: 'TransDate', width:200,title:'tanggal',
@@ -248,7 +243,7 @@
 								{ data: 'CreatedDate', width:200, render: fdate },
 								{ data: 'UpdatedDate', width:200, render: fdate },
 							],
-							//dom: 'Bfrtip',
+							dom: 'Bfrtip',
 							buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
 						});
 						break;
@@ -326,14 +321,14 @@
 							columns: [
 								{ data: null,
 									render: function(data, type, row) {
-										return "<a href='{{ url('/edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
+										return "<a href='{{ url('/trans-edit/'.$jr) }}/"+data['TransNo']+"'>"+data['TransNo']+"</a>";
 									}
 								},
 								{ data: 'TransDate', width:200, render: fdate },
 								{ data: 'Receiver'},
 								{ data: 'PaymentBy'},
 								{ data: 'Total', className:'col-number', render: fcur },
-								//{ data: 'Status'},
+								{ data: 'Status'},
 								{ data: 'CreatedBy'},
 								{ data: 'CreatedDate', width:200, render: fdate },
 							]

@@ -89,7 +89,7 @@
                     var res=JSON.parse(resp); 
                     //alert(res.status);
                     res=res.data;
-                    ////console.log(res);
+                    //console.log(res);
                     $.each(res, function( f, v ) {
                         $("input[name='"+f+"']").val(v);
                     })
@@ -112,7 +112,7 @@
                     data: formdata,
                     success:function(res){
                         alert(res.success);
-                        //console.log(res.data);
+                        console.log(res.data);
                     }
                 });
                 //dialog.modal('hide');

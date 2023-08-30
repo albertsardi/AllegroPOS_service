@@ -149,7 +149,7 @@
                                     @php
                                         $user = ( Session::get('user') );
                                     @endphp
-                                  <h5 class="text-overflow"><small>Hello, {{ $user->LoginName ?? '' }}</small> </h5>
+                                  <h5 class="text-overflow"><small>Hello, {{ $user->LoginName??'' }}</small> </h5>
                               </div>
 
                               <!-- item-->

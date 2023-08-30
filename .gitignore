@@ -1,43 +1,37 @@
-# yii console commands
-/yii
-/yii_test
-/yii_test.bat
 
-# phpstorm project files
-.idea
+# Created by https://www.toptal.com/developers/gitignore/api/laravel
+# Edit at https://www.toptal.com/developers/gitignore?templates=laravel
 
-# netbeans project files
-nbproject
+### Laravel ###
+/vendor/
+node_modules/
+npm-debug.log
+yarn-error.log
 
-# zend studio for eclipse project files
-.buildpath
-.project
-.settings
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
 
-# windows thumbnail cache
-Thumbs.db
+# Laravel 5 & Lumen specific
+public/storage
+public/hot
 
-# composer vendor dir
-/vendor
+# Laravel 5 & Lumen specific with changed public path
+public_html/storage
+public_html/hot
 
-# composer itself is not needed
-composer.phar
-
-# Mac DS_Store Files
-.DS_Store
-
-# phpunit itself is not needed
-phpunit.phar
-# local phpunit config
-/phpunit.xml
-
-# vagrant runtime
+storage/*.key
+.env
+Homestead.yaml
+Homestead.json
 /.vagrant
+.phpunit.result.cache
+/tmp
 
-# ignore generated files
-/frontend/web/index.php
-/frontend/web/index-test.php
-/frontend/web/robots.txt
-/backend/web/index.php
-/backend/web/index-test.php
-/backend/web/robots.txt
+# koolreport
+#app/Report
+
+*.bak
+*.bk
+*.7z
+*.zip

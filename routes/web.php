@@ -37,8 +37,8 @@ if (empty(Session::get('user'))) {
 // Route::get('setting', 'AppController@setting');
 // Route::post('setting', 'AppController@setting_save');
 Route::get('logout', 'AppController@logout');
-Route::get('login', 'AppController@login');
-Route::post('login', 'AppController@checklogin');
+Route::get('login', 'AppController@login'); 
+Route::post('login', 'AppController@checklogin'); 
 // Route::get('upload', 'FileUploadController@upload'); // upload file
 // Route::post('upload/proses', 'FileUploadController@proses_upload'); // process upload file
 // https://www.malasngoding.com/membuat-upload-file-laravel/
@@ -83,8 +83,7 @@ if($jr=='product') {
     }
 });
 
-// Route::group(['middleware' => ['Auth']], function () {
-//Route::group( function () {
+Route::group(['middleware' => ['Auth']], function () {
 
     Route::any('/', 'AppController@dashboard');
     Route::get('dashboard', 'AppController@dashboard');
@@ -92,93 +91,70 @@ if($jr=='product') {
     Route::get('setting', 'AppController@setting');
     Route::post('setting', 'AppController@setting_save');
     // Route::get('logout', 'AppController@logout');
-    // Route::get('login', 'AppController@login');
-    // Route::post('login', 'AppController@checklogin');
+    // Route::get('login', 'AppController@login'); 
+    // Route::post('login', 'AppController@checklogin'); 
     Route::get('upload', 'FileUploadController@upload'); // upload file
     Route::post('upload/proses', 'FileUploadController@proses_upload'); // process upload file
     // https://www.malasngoding.com/membuat-upload-file-laravel/
 
     //dataList
-    Route::get('datalist/{jr}', 'DatalistController@datalist');
-    Route::get('datalist/{jr}/excel', 'DatalistController@datalist_exportexcel');
-    Route::get('datalist/{jr}/pdf', 'DatalistController@datalist_exportpdf');
-    Route::get('datalist/{jr}/pdf-usingChromeheadless', 'DatalistController@datalist_exportpdf_usingChromeheadless');
-    Route::get('accountdetaillist/{id}', 'DatalistController@accountdetaillist');
+    Route::get('datalist/{jr}', 'MasterController@datalist');
+    Route::get('datalist/{jr}/excel', 'MasterController@datalist_exportexcel');
+    Route::get('datalist/{jr}/pdf', 'MasterController@datalist_exportpdf');
+    Route::get('datalist/{jr}/pdf-usingChromeheadless', 'MasterController@datalist_exportpdf_usingChromeheadless');
+    Route::get('accountdetaillist/{id}', 'TransController@accountdetaillist');
 
     //transList
-    Route::get('translist/{jr}', 'DatalistController@translist');
-    Route::get('translist/{jr}/excel', 'DatalistController@translist_exportexcel');
-    Route::get('translist/{jr}/pdf', 'DatalistController@translist_exportpdf');
-    Route::get('translist/{jr}/pdf_usingTPDF', 'DatalistController@translist_exportpdf_usingTPDF');
-    Route::get('translist/{jr}/dt_excel', 'DatalistController@translist_dt_exportexcel');
+    Route::get('translist/{jr}', 'TransController@translist');
+    Route::get('translist/{jr}/excel', 'TransController@translist_exportexcel');
+    Route::get('translist/{jr}/pdf', 'TransController@translist_exportpdf');
+    Route::get('translist/{jr}/pdf_usingTPDF', 'TransController@translist_exportpdf_usingTPDF');
     Route::get('translist/EX', 'JournalBankController@translist');
+    Route::get('translist/{jr}/dt_excel', 'TransController@translist_dt_exportexcel');
+
+    //edit master
+    // Route::any('profile', 'MasterController@profile');
+    // Route::get('supplier-edit/{id}', 'MasterController@dataedit');
+    // Route::post('supplier-edit/{id}', 'MasterController@datasave_customersupplier');
+    // Route::get('customer-edit/{id}', 'MasterController@dataedit');
+    // Route::get('account-edit/{id}', 'MasterController@dataedit');
+    // Route::post('account-edit/{id}', 'MasterController@datasave_coa');
+    // Route::get('bank-edit/{id}', 'MasterController@dataedit');
+    // Route::post('bank-edit/{id}', 'MasterController@datasave_bank');
 
     //profile
-    Route::get('profile', 'ProfileController@profile');
-    Route::post('profile', 'ProfileController@profile_save');
+    Route::get('profile', 'MasterController@profile');
+    Route::post('profile', 'MasterController@profile_save');
 
-    //master Product
-    Route::prefix('product')->group(function () {
-        Route::get('view/{id}', 'ProductController@dataview');
-        Route::get('edit/{id}', 'ProductController@dataedit');
-        //Route::post('edit/{id}', 'ProductController@datasave'); //ini route save yg benar
-    });
-
-    //master Account
-    Route::prefix('coa')->group(function () {
-        Route::get('view/{id}', 'AccountController@dataview');
-        Route::get('edit/{id}', 'AccountController@dataedit');
-        //Route::post('edit/{id}', 'AccountController@datasave'); //ini route save yg benar
-    });
-
-    //master customer / supplier
-    $mdata = ['customer', 'supplier'];
+    //master data
+    $mdata = ['product', 'customer', 'supplier', 'account'];
     foreach($mdata as $jr) {
         Route::prefix($jr)->group(function () {
-            Route::get('view/{id}', 'CustomerSupplierController@dataview');
-            Route::get('edit/{id}', 'CustomerSupplierController@dataedit');
-            //Route::post('edit/{id}', 'CustomerSupplierController@datasave'); //ini route save yg benar
+            Route::get('view/{id}', 'MasterController@dataview');
+            Route::get('edit/{id}', 'MasterController@dataedit');
+            Route::post('edit/{id}', 'MasterController@datasave'); //ini route save yg benar
         });
     }
 
     //edit trans
-    // Route::get('trans-edit/{jr}/{id}', 'TransController@transedit')->name('trans-edit');
-    // Route::post('trans-edit/{jr}/{id}', 'TransController@transsave');
+    Route::get('trans-edit/{jr}/{id}', 'TransController@transedit')->name('trans-edit');
+    Route::post('trans-edit/{jr}/{id}', 'TransController@transsave');
     //Route::post('transsave', 'TransController@transsave');
-    // Route::get("trans-edit/pro/products/batch", 'TransController@testbatch');
-    // Route::post('transpaymentsave', 'TransController@transpaysave');
+    Route::get("trans-edit/pro/products/batch", 'TransController@testbatch');
+    Route::post('transpaymentsave', 'TransController@transpaysave');
 
-    //invoice SI & PI
-    foreach(['PI', 'SI', 'IN'] as $jr) {
-        Route::get("view/$jr/{id}", 'InvoiceController@transview');
-        Route::get("edit/$jr/{id}", 'InvoiceController@transedit');
-        //Route::post("edit/$jr/{id}", 'InvoiceController@transsave'); 
-    }
-
-    //order SO & PO
-    foreach(['PO', 'SO'] as $jr) {
-        Route::get("view/$jr/{id}", 'OrderController@transview');
-        Route::get("edit/$jr/{id}", 'OrderController@transedit');
-        //Route::post("edit/$jr/{id}", 'OrderController@transsave'); 
-    }
-    
-    //payment AR AP
-    foreach(['AR', 'AP'] as $jr) {
-        Route::get("view/$jr/{id}", 'PaymentController@transedit');
-        Route::get("edit/$jr/{id}", 'PaymentController@transedit');
-        //Route::post("edit/$jr/{id}", 'PaymentController@paymentsave');
-    }
+    //payment
+    Route::prefix('payment')->group(function () {
+        Route::get('view/{jr}/{id}', 'PaymentController@transedit');
+        Route::get('edit/{jr}/{id}', 'PaymentController@transedit');
+        Route::post('edit/{jr}/{id}', 'PaymentController@paymentsave');
+    });
 
     //edit cash/bank
-    Route::get('edit/cash/{id}', 'JournalBankController@dataedit');
-    Route::post('edit/cash/{id}', 'JournalBankController@datasave');
-    Route::get('edit/bank/{id}', 'JournalBankController@dataedit');
-    //Route::post('edit/bank/{id}', 'JournalBankController@datasave');
-
-    //expense
-    Route::get("view/EX/{id}", 'ExpenseController@transview');
-    Route::get("edit/EX/{id}", 'ExpenseController@transedit');
-    //Route::post("edit/EX/{id}", 'ExpenseController@transsave'); 
+    Route::get('cash/edit/{id}', 'JournalBankController@dataedit');
+    Route::post('cash/edit/{id}', 'JournalBankController@datasave');
+    Route::get('bank/edit/{id}', 'MasterController@dataedit');
+    Route::post('bank/edit/{id}', 'MasterController@datasave');
 
     //order
     Route::prefix('order')->group(function () {
@@ -202,26 +178,21 @@ if($jr=='product') {
     Route::get('getbalanceacc/{id}', 'AjaxController@getAccSumAmount');
 
     //get data using select box ui
-    Route::get('select/{jr}', 'MainController@selectData');
+    Route::get('select/{jr}', 'SelectController@getSelectData');
 
     //Router test for using new technology
     Route::prefix('test')->group(function () {
         Route::get('docraptorpdf', 'ReportController@test_docraptor');
     });
 
-//});
+});
 
-/*
+/* 
     router tuk coba2
 */
 Route::prefix('test')->group(function($e) {
     // form master load
     Route::get('reportPDF', 'TestController@reportPDF');
-    Route::get('koolreport/chart', 'TestController@koolreportchart');
-    Route::get('koolreport/chart/pdf', 'TestController@koolreportchart_pdf');
-
-    //test all grid
-    Route::view('all-grid', 'test-allgrid', ['caption' => 'Test-Grid']);
 });
 
 

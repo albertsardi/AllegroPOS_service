@@ -13,7 +13,6 @@
     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
     {{ Form::hidden('jr', 'EX') }}   
     {{ Form::hidden('id', $id) }}   
-    {{-- <?php dump($data->toArray());?> --}}
     
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <div class="card mb-3 border-info">
@@ -76,7 +75,7 @@
 
                 <div class='row px-3 float-right'>
                     <div class='col'>
-                        {{ Form::number('Amount', 'Balance', ['disabled'=>true]) }}
+                        {{ Form::number('Amount', 'Total', ['disabled'=>true]) }}
                     </div>
                 </div>
             </div>
@@ -130,17 +129,16 @@
             editType: 'fullRow',
             rowSelection: 'single',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
-                calcTotal();
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
@@ -149,7 +147,6 @@
                     //allOfTheData.push(createRowData(sequenceId++));
                     allOfTheData.push(mydata[i]);
                 }
-                calcTotal();
             },
             components: {
                 //btnCellRenderer: BtnCellRenderer,
@@ -203,7 +200,7 @@
         });
 
         function afterModalClose(sel) {
-            //console.log(sel)
+            console.log(sel)
             if (sel.selModal == 'modal-supplier') {
                 var btn = lookup_target_button;
                 $('#'+btn.attr('id')).textwlookup(sel.selRow[0], sel.selRow[1])

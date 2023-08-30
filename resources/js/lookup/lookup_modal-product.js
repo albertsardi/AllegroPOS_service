@@ -16,7 +16,6 @@ function agGrid_getIndex(gridOptions, find) {
 $(function () {
     $(document).ready(function () {
         $("#listProduct a.lookup-item").click(function (e) {
-            console.log('#listProduct a.lookup-item')
             e.preventDefault();
             e.lookup_id = $(this).closest('div.modal').attr('id')
             var itm = $(this).text(); //get modal id

@@ -124,16 +124,16 @@
             editType: 'fullRow',
             rowSelection: 'single',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
@@ -226,7 +226,7 @@
                 if (resp.statusText=='OK') {
                     let dat = await resp.json();
                     let opt = '';
-                    //console.log(dat)
+                    console.log(dat)
                     for(let dt of dat) opt += `<option value="${dt.DONo}">${dt.DONo}</option>`;
                     $('select#OrderNo').html(opt); 
 
@@ -247,7 +247,7 @@
                     }
                 }
             } catch(error) {
-                //console.log(error)
+                console.log(error)
             }
         }
 

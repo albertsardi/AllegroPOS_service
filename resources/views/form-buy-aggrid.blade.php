@@ -106,7 +106,7 @@
             this.params = params;
             this.eGui = document.createElement('button');
             this.eGui.innerHTML = 'Click me!';
-            //console.log(this.eGui)
+            console.log(this.eGui)
             this.btnClickedHandler = this.btnClickedHandler.bind(this);
             this.eGui.addEventListener('click', this.btnClickedHandler);
         }
@@ -126,7 +126,7 @@
         var grid_delrow = function (row) {
             alert('del row - '+row)
             gridOptions.api.applyTransaction({remove:2})
-            //console.log(gridOptions.rowData)
+            console.log(gridOptions.rowData)
             gridOptions.rowData.splice(row, 2);
             gridOptions.api.refreshInfiniteCache();
         }  
@@ -200,16 +200,16 @@
             enableCellChangeFlash: true,
             editType: 'fullRow',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
@@ -265,7 +265,7 @@
                 var key = $(this).parent().text().replace('...','').trim()
                 selRowIdx = agGrid_getIndex(gridOptions, key);
                 //selRow = gridOptions.api.getSelectedRows();
-                ////console.log(selRow)
+                //console.log(selRow)
             });*/
             //save data
             $("button#cmSave").click(function(e){
@@ -283,7 +283,7 @@
                     data: formdata,
                     success:function(res){
                         alert(res.success);
-                        //console.log(res.data);
+                        console.log(res.data);
                     }
                 });
             });
@@ -334,7 +334,7 @@
         });
 
         function afterLookupClose(e) {
-            //console.log(e.lookup_id)
+            console.log(e.lookup_id)
             if (e.lookup_id == 'modal-account') {
                 var btn = lookup_target_button;
                 $('#'+btn.attr('id')).textwlookup(selRow.AccNo, selRow.AccName)
@@ -349,11 +349,11 @@
                 gridOptions.api.setRowData(mydata);
             }*/
             if (e.lookup_id == 'modal-product') {
-                ////console.log(e)
+                //console.log(e)
                 var btn = lookup_target_button
                 var find = btn.parent().text().replace('...','').trim()
                 selRowIdx = agGrid_getIndex(gridOptions, find);
-                ////console.log(selRowIdx)
+                //console.log(selRowIdx)
                 mydata[selRowIdx].ProductCode = selRow.Code
                 mydata[selRowIdx].ProductName = selRow.Name
                 gridOptions.api.setRowData(mydata);

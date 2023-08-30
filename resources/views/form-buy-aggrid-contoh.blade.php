@@ -114,7 +114,7 @@
             this.params = params;
             this.eGui = document.createElement('button');
             this.eGui.innerHTML = 'Click me!';
-            //console.log(this.eGui)
+            console.log(this.eGui)
             this.btnClickedHandler = this.btnClickedHandler.bind(this);
             this.eGui.addEventListener('click', this.btnClickedHandler);
         }
@@ -134,12 +134,12 @@
         //var sequenceId;
         //var allOfTheData;
         var grid_delrow = function (row) {
-            ////console.log(gridOptions.rowData)
+            //console.log(gridOptions.rowData)
             //gridOptions.api.applyTransaction({ add: gridOptions.rowData });
 
                 alert('del row - '+row)
                 gridOptions.api.applyTransaction({remove:2})
-                //console.log(gridOptions.rowData)
+                console.log(gridOptions.rowData)
                 gridOptions.rowData.splice(row, 2);
                 gridOptions.api.refreshInfiniteCache();
             }     
@@ -213,7 +213,7 @@
                     var res=JSON.parse(resp); 
                     //alert(res.status);
                     res=res.data;
-                    ////console.log(res);
+                    //console.log(res);
                     $.each(res, function( f, v ) {
                         $("input[name='"+f+"']").val(v);
                     })
@@ -237,7 +237,7 @@
                 { field: "ProductCode", headerName: 'Product #', editable:true, edittype:'text', width: 270, 
                     //cellRenderer:'btnCellRenderer',
                     cellRenderer:function(row)  {
-                        ////console.log(row)
+                        //console.log(row)
                         return row.value+'  <button type="button" line='+row.rowIndex+'">...</button>';
                     },
                     cellRendererParams: {
@@ -305,16 +305,16 @@
             //editurl : 'clientarray', 
             //datatype: 'local',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
@@ -373,12 +373,12 @@
         });
         $("button#cmSubmit").click(function(e){
             alert('submit all data');
-            ////console.log(mydata);
+            //console.log(mydata);
             const rowData = [];
             gridOptions.api.forEachNode(function (node) {
                 rowData.push(node.data);
             });
-            //console.log(rowData);
+            console.log(rowData);
         });
 
         
@@ -401,7 +401,7 @@
                 data: formdata,
                 success:function(res){
                     alert(res.success);
-                    //console.log(res.data);
+                    console.log(res.data);
                 }
             });
         });
@@ -410,20 +410,20 @@
                e.preventDefault();
                var url='http://localhost:500/api/datasave_product';
                Ajax_post(url, 'formData');
-               //console.log(res);
+               console.log(res);
 	         });*/
 
             
             /*var dataSource= "http://localhost:8000/ajax_getProduct/C-11";
             $.getJSON(dataSource, function(data, status) {
                 for(var row=0;row<data.length;row++) {
-                    //console.log(data);
+                    console.log(data);
                 }
             })  */
             
             //cmSave click
             //$('button#cmxSave').click(function() {
-                ////console.log('Saving ....');
+                //console.log('Saving ....');
                 /*var dialog = bootbox.dialog({
                     message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>Saving, Please wait ...</p>',
                     closeButton: false
@@ -446,12 +446,12 @@
                      type: 'POST', 
                      dataType: 'json',
                      success: function (e) {
-                        //console.log(JSON.stringify(e));
+                        console.log(JSON.stringify(e));
                         app.locals='OK'
                         return 'OK'
                      },
                      error:function(e){
-                        //console.log(JSON.stringify(e));
+                        console.log(JSON.stringify(e));
                         //return JSON.stringify(e)
                         return 'ERROR'
                      }

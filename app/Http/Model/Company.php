@@ -10,7 +10,7 @@ class Company extends Model
   protected $primaryKey = 'Name';
   protected $keyType = 'string';
   public $timestamps = false; //disable time stamp
-  protected $fillable = ['Name','LogoPath','Address','DeliveryAddress','Phone','Fax','TaxNo','Website','Email','Token']; 
+  protected $fillable = ['Name','LogoPath','Address','DeliveryAddress','Phone','Fax','TaxNo','Website','Email']; 
   //const CREATED_AT = 'create_time'; //change laravel timestamp
   //const UPDATED_AT = 'update_time'; //change laravel creator stamp
   //protected $appends = ['availability'];

@@ -295,9 +295,9 @@
         //dataSource= "{{ action('DataController@loadTrans', '[id]') }}";
         //dataSource= dataSource.replace("[id]", TransNo);
 
-        //console.log(dataSource);
+        console.log(dataSource);
         $.getJSON(dataSource, function(data, status) {
-            //console.log(data);
+            console.log(data);
             for (var nm in data) {
                 //var result='';
                 // obj.hasOwnProperty() is used to filter out properties from the object's prototype chain
@@ -311,8 +311,8 @@
             }
         })
         .error(function(jqXHR, textStatus, errorThrown) {
-            //console.log("error " + textStatus);
-            //console.log("incoming Text " + jqXHR.responseText);
+            console.log("error " + textStatus);
+            console.log("incoming Text " + jqXHR.responseText);
         });
     }
     $(document).ready(function() {
@@ -358,8 +358,8 @@
                     $('label#AccName').text(data.AccName);
                 })
                 .error(function(jqXHR, textStatus, errorThrown) {
-                    //console.log("error " + textStatus);
-                    //console.log("incoming Text " + jqXHR.responseText);
+                    console.log("error " + textStatus);
+                    console.log("incoming Text " + jqXHR.responseText);
                 });
             }
         });
@@ -380,8 +380,8 @@
                         setcell(row, 'ProductName', data.Name);
                     })
                     .error(function(jqXHR, textStatus, errorThrown) {
-                        //console.log("error " + textStatus);
-                        //console.log("incoming Text " + jqXHR.responseText);
+                        console.log("error " + textStatus);
+                        console.log("incoming Text " + jqXHR.responseText);
                     });
                     break;
                 case 'grid-Qty[]':

@@ -47,7 +47,7 @@
               ]);?>
                 <?= headsubmenu('Sales', 'fa-th', [
                 ['Sales Order','translist/SO'],
-                {{-- ['Delivery Order','translist/DO'], --}}
+                ['Delivery Order','translist/DO'],
                 ['Sales Invoices','translist/SI'],
                 ['Receive Payments','translist/AR']
               ]);?>
@@ -116,11 +116,11 @@ function getLink($link) {
     //translist/PI
     $link=explode('/', $link);
     if($link[0]=='datalist') {
-        $slink=URL::action('DatalistController@datalist', $link[1]);
+        $slink=URL::action('MasterController@datalist', $link[1]);
         return $slink;
     }
     if($link[0]=='translist') {
-        $slink=URL::action('DatalistController@translist', $link[1]);
+        $slink=URL::action('TransController@translist', $link[1]);
         return $slink;
     }
     if($link[0]=='app') {

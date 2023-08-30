@@ -40,16 +40,11 @@
                 </li>
             </ul> --}}
 
-            @php 
-                $img = Image::get($comp->LogoPath);
-            @endphp
+            <?php #dd($comp->LogoPath);?>
             <div class="card" style="height:auto;">
                 <div class="card-body" id="company-card" >
                     <h5>Pengaturan Perusahaan</h5>
                     <hr>
-                    <img src="{{ $img }}" class="img-fluid" alt="My Company Logo" style="width:200px;height:200px;">
-                    {{-- <img src="{{$comp_img}}" class="img-fluid" alt="My Company Logo"> --}}
-                    {{-- <img src="{{$comp_img ?? $no_img}}" class="img-fluid" alt="My Company Logo"> --}}
                     {{ Form::text('LogoPath', 'Logo', $comp->LogoPath ?? '') }}
                     {{ Form::checkbox('LogoShow', 'Tampilkan logo di Laporan', $comp->LogoShow ?? '') }}
                     {{ Form::text('Name', 'Nama Perusahaan', $comp->Name ?? '') }}
@@ -245,7 +240,7 @@
                     data: formdata,
                     success:function(res){
                         alert(res.success);
-                        //console.log(res.data);
+                        console.log(res.data);
                     }
                 });
             });
@@ -255,7 +250,7 @@
             $("#modal-setting-category a.edit-item").click(function (e) {
                 e.preventDefault();
                 var name = $(this).text();
-                //console.log('edit ---'+name);
+                console.log('edit ---'+name);
                 $("input[name='input-name']").val(name);
                 
                 $('#modal-setting-category #list').addClass('d-none'); //hide list
@@ -268,7 +263,7 @@
             });
             $("#modal-setting-category #input-close").click(function (e) {
                 e.preventDefault();
-                //console.log('input-close')
+                console.log('input-close')
                 $('#modal-setting-category #list').removeClass('d-none'); //show form
                 $('#modal-setting-category #form-input').addClass('d-none'); //hide list
                 
@@ -278,24 +273,24 @@
             });
             $("#modal-setting-category #input-save").click(function (e) {
                 e.preventDefault();
-                //console.log('input-save')
+                console.log('input-save')
 
                 //save
                 var name = $("input[name='input-name']").val();
                 var data = { 
                     table: 'masterproductcategory', save: {Category: name, Active: 1 }
                 }
-                ////console.log(data)
+                //console.log(data)
                 //$.get("http://localhost/lav7_PikeAdmin/api/datasave/master?table=master&Category="+name, function(data, status){
                     //alert("Data: " + data + "\nStatus: " + status);
-                    ////console.log('ddd')
-                    ////console.log("Data: " + data + "\nStatus: " + status);
+                    //console.log('ddd')
+                    //console.log("Data: " + data + "\nStatus: " + status);
                 //});
                 //$.get("http://localhost/lav7_PikeAdmin/api/datasave/master", data, function(data, status){
                 $.get( '{{ url('/ajax/datasave') }}', data, function(resp, status){
                     //alert("Data: " + data + "\nStatus: " + status);
-                    ////console.log('ddd')
-                    //console.log("Data: " + resp + "\nStatus: " + status);
+                    //console.log('ddd')
+                    console.log("Data: " + resp + "\nStatus: " + status);
                 });
                 $('#modal-setting-category #list').removeClass('d-none'); //show form
                 $('#modal-setting-category #form-input').addClass('d-none'); //hide list
@@ -335,9 +330,9 @@
                 var data = { 
                     table: 'common', save: {category: 'Unit',catid: 1, name1: name, id: id }
                 }
-                //console.log('{{ url('/ajax/datasave') }}');
+                console.log('{{ url('/ajax/datasave') }}');
                 $.get( '{{ url('/ajax/datasave') }}', data, function(data, status){
-                    //console.log("Data: " + data+ "\nStatus: " + status);
+                    console.log("Data: " + data+ "\nStatus: " + status);
                     $('#listProductUnit').DataTable().draw();
                 });
                 $('#modal-setting-unit #list').removeClass('d-none'); //show form
@@ -350,7 +345,7 @@
         });
 
         function afterLookupClose(e) {
-            //console.log(e.lookup_id)
+            console.log(e.lookup_id)
             if (e.lookup_id == 'modal-account') {
                 var btn = modal_target_button;
                 $('#'+btn.attr('id')).textwlookup(selRow.AccNo, selRow.AccName)

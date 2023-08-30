@@ -9,7 +9,7 @@
 @section('content')
     <form id='formData'>
      <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-    {{ Form::hidden('jr', $jr) }}      
+    {{ Form::hidden('jr', 'AR') }}      
     <!-- PANEL1 -->
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="card mb-3">
@@ -116,16 +116,16 @@
             enableCellChangeFlash: true,
             editType: 'fullRow',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
@@ -186,7 +186,7 @@
                 data: formdata,
                 success:function(res){
                     alert(res.success);
-                    //console.log(res.data);
+                    console.log(res.data);
                 }
             });
         }); */
@@ -207,7 +207,7 @@
    });
 
    {{-- function afterModalClose(sel){
-       //console.log(sel)
+       console.log(sel)
       if (Array.isArray(lookup_target)) { //grid lookup
          if (lookup_target[1]=='ProductCode') { //form lookup
             cellset(lookup_target[0], lookup_target[1], lookup_select.Code)
@@ -222,7 +222,7 @@
       
    } --}}
     function afterModalClose(sel) {
-        //console.log(sel)
+        console.log(sel)
         if (sel.selModal == 'modal-supplier') {
             var btn = lookup_target_button;
             $('#'+btn.attr('id')).textwlookup(sel.selRow[0], sel.selRow[1])
@@ -237,7 +237,7 @@
             mydata[selRowIdx].Price = 0;
             //get product price
             $.get(`http://localhost/lav7_PikeAdmin/getrow/masterproductprice/Code=${sel.selRow[0]}`, function(data, status){
-                ////console.log(data)
+                //console.log(data)
                 mydata[selRowIdx].Price = parseInt(data.Channel1);
                 gridOptions.api.setRowData(mydata);
             });

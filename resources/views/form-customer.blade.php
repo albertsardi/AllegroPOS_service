@@ -3,7 +3,7 @@
 @section('content')
     <form id='formData'>
     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-    {{ Form::hidden('jr', 'customer') }}  
+    {{ Form::hidden('jr', 'customer') }}   
     <!-- PANEL1 -->
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="card mb-3">
@@ -102,7 +102,7 @@
                 data: formdata,
                 success:function(res){
                     alert(res.success);
-                    //console.log(res.data);
+                    console.log(res.data);
                 }
             });
         });
@@ -142,7 +142,7 @@
    });
    
    function afterLookupClose(e) {
-        //console.log(e.lookup_id)
+        console.log(e.lookup_id)
         if (e.lookup_id == 'modal-account') {
             var btn = modal_target_button;
             $('#'+btn.attr('id')).textwlookup(selRow.AccNo, selRow.AccName)

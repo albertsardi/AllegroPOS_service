@@ -28,14 +28,12 @@
     paging: true,
     pageLength: 10,
     pagingType: "full_numbers",
-    data: {!! $Account??'[]' !!},
+    data: {!! $mAccount !!},
     columns: [
         {
             data: null,
             render: function (data, type, row, sett) {
-                //console.log(row)
-                //var drow = `${row.AccNo}|${row.AccName}|${row.CatName}`;
-                var drow = `${row.id}|${row.AccNo}|${row.AccName}|${row.CatName}`;
+                var drow = `${row.AccNo}|${row.AccName}|${row.CatName}`;
                 return `<a href='' class='lookup-item' rowIdx=${sett.row} data-drow='${drow}'>`+ data['AccNo'] +`</a>`;
             }
         },

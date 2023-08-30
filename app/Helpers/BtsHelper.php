@@ -12,20 +12,8 @@ class HTML
         $xx=asset($image);
         return "<img src='$xx' alt='$alt'>";
     }
-}
 
-class Image
-{
-    public static function get($image) {
-		$no_img = asset('assets/images/no_image.png');
-        $img = asset('assets/images/'.$image);
-		return $img;
-		if (file_exists($img)) {
-		  return $img;
-	  	} else {
-		  return $no_img;
-	  	}
-	}
+    
 }
 
 
@@ -64,25 +52,26 @@ class Form
 	public static function getValue($name, $other, $defvalue='') {
 		if(!isset(self::$form_data)) { //not binding
 			$value = $other;
-			if (is_array($other)) $value = $other['value']??$defvalue;
+			if (is_array($other)) $value = $other['value'];
 		} else { //use binding
 			$value = isset(self::$form_data->$name)? self::$form_data->$name : $defvalue;
 		}
-
+		
 		// if(is_array($other)) {
 		// 	$value = isset($other->value)? $other->value:$defvalue;
 		// 	if (isset(Form::$form_data)) $value = Form::$form_data->$name;
 		// } else {
 		// 	$value= $other;
+		// 	//dd($value);
 		// 	if (isset(Form::$form_data)) $value = Form::$form_data->$name;
 		// }
 		return $value;
 	}
-
+	
 	public static function hidden($name, $value) {
         echo "<input type='hidden' name='$name' value='$value'>";
 	}
-
+	
 	//public static function text($name, $label, $value, $other=null) {
 	public static function text($name, $label, $other=[], $other2=[]) {
 		$value = Form::getValue($name, $other);
@@ -219,7 +208,7 @@ class Form
 		$temp = str_replace("{{name}}", $name, $temp);
 		$temp = str_replace("{{label}}", $label, $temp);
 		$temp = str_replace("{{input}}", $input, $temp);
-
+  
 		echo $temp;
 		// echo "<div class='form-group row'>
 		// 			<div class='col-sm-9 offset-sm-3'>
@@ -246,12 +235,12 @@ class Form
 								<button id='$name-lookup' type='button' data-toggle='modal' data-target='#$modal' class='btn btn-outline-secondary btn-sm btnlookup'><i class='fa fa-search'></i></button>
 							</div>
 				   		</div>
-					</div>
+					</div>   
 					<div class='form-row'>".
 						// <label id='$name-val2' class='form-label' for='autoSizingCheck2'> <i>blank</i> </label>
 						self::_textbox($name."Label", '')."
-					</div>
-				</div>
+					</div>   
+				</div>   
             </div>";
 	}
 	public static function textwlookup2($dat=[]) {
@@ -261,7 +250,7 @@ class Form
 		$modal = $dat['modal'] ?? '';
 		$other = $dat['other'] ?? '';
 		$other2 = $dat['other2'] ?? '';
-		$value= Form::getValue($name, $other);
+		$value= Form::getValue($name, $other); 
 		if (!empty($other2)) $other = $other2;
 
 		echo "<div class='form-row align-items-top'>
@@ -276,11 +265,11 @@ class Form
 								<button id='$name-lookup' type='button' data-toggle='modal' data-target='#$modal' class='btn btn-outline-secondary btn-sm btnlookup'><i class='fa fa-search'></i></button>
 							</div>
 				   		</div>
-					</div>
+					</div>   
 					<div class='form-row'>".
 						self::_textbox($name2, $value)."
-					</div>
-				</div>
+					</div>   
+				</div>   
             </div>";
 	}
 	public static function textwselect($name, $label, $list = [], $other = [], $other2 = []) {
@@ -309,7 +298,7 @@ class Form
 					self::_attributes_to_string($other).
 				">";
 	}
-
+	
 	public static function _numericbox($name, $value='', $other=[]) {
 		return "<input name='$name' id='$name' value='$value' type='numeric' class='form-control form-control-sm' autocomplete='off' ".
 					self::_attributes_to_string($other).
@@ -336,8 +325,7 @@ class Form
 		return "<input id='$name' name='$name' class='form-check-input' type='checkbox' $ck value='$value' >";
 	}
 	public static function _select($name, $list, $value='', $other=[]) {
-		$slist = "<option> -|- </option>";
-		$slist = "";
+		$slist = "<option> - </option>";
 		if (count($list) > 0) {
 			//single array
 			// foreach($list as $ls) {
@@ -354,7 +342,7 @@ class Form
 				$slist .= "<option value='$v1' $s>" . $v2 . "</option>";
 			}
 		}
-		if ($other==[]) $sel2 = 'select2';
+		if ($other==[]) $sel2 = 'select2'; 
 		$sel2 = (isset($other['mselect']))? 'mselect2':'select2';
 		return "<select name='$name' id='$name' class='form-control form-control-sm $sel2' autocomplete='off'>
 					$slist
@@ -362,8 +350,7 @@ class Form
 	}
 
 	public static function _mselect($name, $list, $value='', $other=[]) {
-		$slist = "<option> -|- </option>";
-		$slist = "";
+		$slist = "<option> - </option>";
 		if (count($list) > 0) {
 			//single array
 			// foreach($list as $ls) {
@@ -372,23 +359,21 @@ class Form
 			// }
 			// multiplae array
 			foreach($list as $ls) {
-				//$ls = (array)$ls;
-				$v1 = $ls['id'];
-				$v2 = $ls['text'];
-				// $key = array_keys($ls);
-				// if (!isset($key[1])) $key[1]=$key[0]; //cek if single column
-				// $v1 = $ls[$key[0]]; $v2 = $ls[$key[1]];
+				$ls = (array)$ls;
+				$key = array_keys($ls);
+				if (!isset($key[1])) $key[1]=$key[0]; //cek if single column
+				$v1 = $ls[$key[0]]; $v2 = $ls[$key[1]];
                 $s = (strtolower($v1)==strtolower($value))? 'selected':'';
 				$slist .= "<option value='$v1' $s>" . $v2 . "</option>";
 			}
 		}
-		return "<select name='$name' id='$name' class='form-control form-control-sm xmselect2 w-100' autocomplete='off'>
+		return "<select name='$name' id='$name' class='form-control form-control-sm xmselect2' autocomplete='off'>
 					$slist
 				</select>";
 	}
+	
 
-
-
+	
 	public static function _attributes_to_string($attributes)
 	{
 		if (empty($attributes))
@@ -421,7 +406,7 @@ class Form
 	// 		return $defValue;
 	// 	}
 	// }
-
+    
 }
 
 #------------------------------------------------
@@ -434,7 +419,7 @@ class Form2
 	public static function text($name, $label, $other=null) {
 		// if (!is_array($other)) {$value = $other;} else {$value = isset($other['value'])? $other['value']:'';}
 		// if (!is_null(Form::$form_data)) $value= Form::_get_value($name, 0);
-
+		
 		// if ($other==null) $value = Form::$form_data->$name;
 		// if(is_array($other)) {
 		// 	$value = isset($other->value)? $other->value:'';
@@ -490,7 +475,7 @@ class Form2
 					</div>
 				</div>".
 				"<div class='form-row'>
-					<label id='".$name."-label' class='form-label' for='autoSizingCheck2'> <i>blank</i> </label>
+					<label id='$name-val2' class='form-label' for='autoSizingCheck2'> <i>blank</i> </label>
 				</div>  ";
 		echo "<div class='row mb-1'>
 				<div class='col-4 text-right'> $label </div>

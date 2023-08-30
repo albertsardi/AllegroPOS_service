@@ -18,9 +18,7 @@
                 /*table, tr, td, th, tbody, thead, tfoot { 
                     page-break-inside: avoid !important;
                 }*/
-                tr, td, th, thead, tfoot { 
-                    page-break-inside: avoid !important;
-                }
+                #table1 td{page-break-after: always !important;}
             }
             h2 b{font-size:17px;color:rgb(192,143,0) !important;padding-bottom:5px;}
             .gap {padding-bottom:30px;}
@@ -44,11 +42,12 @@
             #table1 tfoot {height:50px;border-color:black !important;background-color:#56585B !important;}
             #table1 tfoot td{font-size:12px;color:white !important;background-color:#56585B !important;font-weight:bold;}
             #table1 tfoot td b{color:white !important;}
+            #table1 td {color:red !important;}
 
         </style>
     </header>
     
-    <body style="margin:1.5in 1in 0.5in 1in;padding-left:0.5in;width:8.2in">
+    <body>
         <!-- <div class="page-header text-small" style="text-align:right"><i>CPM Report</i><hr/></div> -->
         <div class="page-header text-small" style="font-size:9px;"><b>Tanggal Laporan <?=date('d M Y h:i');?></b><br><i>Reporting Date</i></div>
         <div class="page-footer text-small" style="font-size:9px;"><i>{pageNum}</i></div>

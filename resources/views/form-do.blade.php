@@ -159,16 +159,16 @@
             editType: 'fullRow',
             rowSelection: 'single',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
                 calcAll();
             },
             onGridReady: function (params) {
@@ -201,11 +201,10 @@
                 $('select#'+dt[0]).select2({
                     placeholder: `Choose a ${dt[1]}`,
                     templateResult: function(data) {
-                        var r = data.text.split('|')
                         var result = jQuery(
                         '<div class="row">' +
-                            '<div class="col-md-3">' + r[0] + '</div>' +
-                            '<div class="col-md-9">' + r[1] + '</div>' +
+                            '<div class="col-md-3">' + data.id + '</div>' +
+                            '<div class="col-md-9">' + data.text + '</div>' +
                         '</div>'
                         );
                         return result;
@@ -248,7 +247,7 @@
                 //submit grid data to variable
                 const rowData = [];
                 gridOptions.api.forEachNode(function (node) {
-                    //console.log(mydata)
+                    console.log(mydata)
                     rowData.push(node.data);
                 });
                 $("input[name='detail']").val(JSON.stringify(rowData));
@@ -260,7 +259,7 @@
 
             $('.modal').on('show.bs.modal', function (e) {
                 lookup_target_button = $(e.relatedTarget) // Button that triggered the modal
-                ////console.log(lookup_target_button)
+                //console.log(lookup_target_button)
             })
         });
 
@@ -291,13 +290,13 @@
             resp = await fetch(' {{ url('getdata/orderdetail') }}?TransNo='+SOno);
             if (resp.statusText=='OK') {
                 let dat = await resp.json();
-                ////console.log(dat)
+                //console.log(dat)
                 if (dat.length>0) {
                     //mydata = []; //clear data grid
                     for(let dt of dat) {
-                        ////console.log(dt);
+                        //console.log(dt);
                         let idx = findIdx(mydata, {ProductCode:dt.ProductCode} )
-                        ////console.log(row);
+                        //console.log(row);
                         if (idx==-1) {
                             // if not found insert
                             mydata.push( { 
@@ -344,7 +343,7 @@
         function calcAll() {
             var tot = 0; var totQty = 0;
             for(let r of mydata) {
-                ////console.log(r)
+                //console.log(r)
                 r.Amount = parseInt(r.SentQty) * parseInt(r.Price);
                 tot+= r.Amount;
                 totQty+= parseInt(r.SentQty);

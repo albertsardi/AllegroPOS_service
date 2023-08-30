@@ -1,9 +1,6 @@
 #make component
 - https://www.indeveloper.id/2020/03/tutorial-cara-membuat-dan-menggunakan.html
 
-php component yg bisa membantu
-- https://www.koolreport.com/blog/tag/php-charts-free
-
 
 
 #status process id
@@ -13,19 +10,4 @@ php component yg bisa membantu
 
 0: draft
 1: ready to process
-
-
-#Template form customer/supplier
- <div class="form-group">
-                    <label for="input">Customer</label>
-                    {!! Form::_mselect('AccCode', $select->selCustomer, $data->AccCode??'') !!}
-                </div>
-
-#Template form warehouse
- <div class="form-group">
-                    <label for="input">Customer</label>
-<label for="warehouse"Warehouse</label>
-                        {!! Form::_mselect('Warehouse', $select->selWarehouse, $data->selWarehouse??'') !!}
-</div>
-
 

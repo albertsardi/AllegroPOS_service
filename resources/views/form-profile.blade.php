@@ -9,7 +9,6 @@
 	<form id='formData' method='POST'>
     {{ Form::hidden('_token', csrf_token() ) }}  
     {{ Form::hidden('jr', 'profile') }}  
-	{{ Form::hidden('Token', session('token')) }}
 	<div class="container">
 	<div class="row">
 	<div class="col-12">

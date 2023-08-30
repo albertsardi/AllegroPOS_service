@@ -7,8 +7,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use App\Http\Model\Payment;
-use App\Http\Model\CustomerSupplier;
 use App\Http\Model\Transaction;
+
 
 class PaymentController extends MainController {
 	
@@ -22,66 +22,14 @@ class PaymentController extends MainController {
 
     function transedit($id)
 	{
-		if(str_contains($_SERVER['REQUEST_URI'], 'edit/AR')) $jr='AR';
-		if(str_contains($_SERVER['REQUEST_URI'], 'edit/AP')) $jr='AP';
-		$data = [
+        $jr = substr($id, 0, 2);
+        $data = [
 			'modal' => '',
 			'jsmodal' => '',
 			'jr' => $jr,
       	    'id' => $id,
             'caption' => $this->makeCaption($jr, $id)
         ];
-
-		if ($jr == 'AP') {
-			$modal = $this->modalData(['modAccount','modInvUnpaid']);
-			$select = $this->selectData(['selSupplier','selBankAccount']);
-			$view = 'form-ARAP';
-			$res = Payment::getdata($jr, $id);
-		}
-		if ($jr == 'AR') {
-			//$modal = (array)$this->modalData(['modAccount']);
-			//$select = $this->selectData(['selCustomer','selBankAccount']);
-			
-			$data['mAccount'] = $this->modalData(['modAccount']);
-			$data['select'] = $this->selectData(['selCustomer','selBankAccount']);
-			$view = 'form-ARAP';
-			$res = Payment::getdata($jr, $id);
-			//dd($res);
-		}
-		//dd($data['mAccount']);
-		//dd($res);
-
-
-		// get modal data
-		//if (isset($modal)) $data = array_merge($data, $modal);
-		
-		// get select data
-		//$data['select'] = isset($select)? $select:[];
-		
-		// get data
-		if ($res->status=='OK') {
-			if(!empty($res->data)) {
-				$res->data->status 	= $this->gettransstatus($id, $jr);
-				$data['data']		= $res->data;
-				$data['griddata'] 	= $res->data->detail;
-				$data['data']->Status = $this->getTransStatus($jr, $data['data']->Status);
-				dump($res->data);
-			} else {
-				$data['data'] =(object)['status' => 'DRAFT'];
-				$data['griddata'] = [];
-				$resp = $data;
-			}
-			return view($view, $data); // using agGrid
-		} else {
-			dd('Error '.$res->status);
-		}
-
-
-
-
-
-
-
 
 		if ($jr == 'AR' || $jr == 'AP') {
 			// form initial
@@ -103,7 +51,7 @@ class PaymentController extends MainController {
             //return $data;
 		
             // get data
-			$res = Payment::getdata($id);
+			$res = Payment::Get($id);
 			if ($res->status=='OK') {
 				if(!empty($res->data)) {
 					$res->data->status 	= $this->gettransstatus($id, $jr);
@@ -176,27 +124,6 @@ class PaymentController extends MainController {
 			return redirect(url( $req->path() ))->with('error', $e->getMessage());
 	  	}
 	}
-
-	// function getTransStatus($jr, $status)
-	// {
-		/*switch ($jr) {
-			case 'AP':
-				$dat = $this->DB_array('transpaymentarap', "sum(AmountPaid) as paid", "InvNo='$transno' ");
-				$dat = (int) ($dat[0]['paid']);
-				if ($dat > 0) return "CLOSED";
-				return "";
-				break;
-			case 'AR':
-				$dat = $this->DB_array('transdetail', "InvNo", "TransNo='$transno' ");
-				if (count($dat) > 0) return "CLOSED";
-				return "";
-				break;
-			default:
-				return "none";
-		}*/
-		// if ($status==0) return DRAFT;
-		// if ($status==1) return APPROVED;
-	// }
 
 	function createModal($type)
 	{

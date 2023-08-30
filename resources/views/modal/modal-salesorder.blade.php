@@ -22,7 +22,7 @@
   </div>
 </div>
 
-{{-- <script>
+<script>
   $('#listSO').DataTable({
     paging: true,
     pageLength: 10,
@@ -41,7 +41,7 @@
         { data: 'Total' },
     ]
 });
-</script> --}}
+</script>
 
 
 

@@ -70,8 +70,6 @@
                                 @php $enable = ($id=='NEW')? 'disabled':''; @endphp
                                 @php $status = isset($data->Status)? $data->Status:DRAFT;@endphp
                                 <button id='cmSave2' type='submit' @php echo (($status==DRAFT)?'':'disabled');@endphp class="btn btn-primary btn-sm btn-submit">Save</button>
-
-                                <button id='cmSave' type='button' @php echo (($status==DRAFT)?'':'disabled');@endphp class="btn btn-primary btn-sm btn-submit">Save use ajax</button>
                                 <button id='cmPrint' type="submit" {{$enable}}  class="btn btn-primary btn-sm">Print</button>
                             </div>
                             <div class="col text-right">
@@ -93,6 +91,9 @@
                     </div>
 			    </div>
 
+                <!-- <form  method='post'> -->
+                {{ Form::hidden('formtype', $jr) }}
+        
                 <div class='xrow'>
                     @yield('content')
                 </div>
@@ -147,16 +148,11 @@
 <script src="{{ asset('assets/js/fastclick.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/plugin/select2/select2.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/moment.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('assets/plugin/axios/axios.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/js/pikeadmin.js') }}" type="text/javascript"></script>
 {{-- <script src="{{ asset('assets/textwlookup.js') }}" type="text/javascript"></script> --}}
 <script type="text/javascript">
    $(document).ready(function() {
-        //init api url
-        window.API_URL = "{{ env('API_URL') }}";
-		//init number box
-        $(':input[type=number]').on('mousewheel',function(e){ $(this).blur();  });
-        //init for checkbox
+		//init for checkbox
         $("input[type=checkbox]").change(function() {
 			$(this).val( (this.checked)? '1' : '0' );
 		})
@@ -166,7 +162,7 @@
             clearBtn:true,
         });
         //init textwselect
-        $('.xxmselect2').select2({
+        $('.mselect2').select2({
             theme: "bootstrap",
             /*ajax: {
                 url: 'http://localhost/lav7_PikeAdmin/'+api,
@@ -193,18 +189,13 @@
                 return result;
             },
             //matcher: function(term, text) {
-            // TODO: search nya mash belum jalam//console.log([term, text]);
+            // TODO: search nya mash belum jalamconsole.log([term, text]);
             //return text.toUpperCase().indexOf(term.toUpperCase())>=0 || option.val().toUpperCase().indexOf(term.toUpperCase())>=0;
             //if (text.toUpperCase().indexOf(term.toUpperCase())==0) return true;
             //return false;
             //}
         });
-        //init select2
-        $('.select2').select2({
-            theme: "bootstrap",
-            placeholder: 'Select an option'
-        });
-        
+
         $('button.btn:disabled').removeClass('btn-primary').addClass('btn-secondary')
 	})
 </script>

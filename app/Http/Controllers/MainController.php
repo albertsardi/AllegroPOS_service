@@ -1,13 +1,4 @@
 <?php
-
-/*
- * Allegro.ID multi
- *
- * @author		IntersoftMedia Developers & Contributors
- * @copyright	Copyright (c) 2023 - 2025 Intersoft.web.id
- * @license		https://Intersoft.web.id/license.txt
- * @link		https://app.intersoft.web.id */
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -17,17 +8,6 @@ use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Input;
-use App\Http\Model\Account;
-use App\Http\Model\Common;
-use App\Http\Model\CustomerSupplier;
-use App\Http\Model\CustomerSupplierCategory;
-use App\Http\Model\Invoice;
-use App\Http\Model\Salesman;
-use App\Http\Model\Order;
-use App\Http\Model\Product;
-use App\Http\Model\ProductCategory;
-use App\Http\Model\Warehouse;
-use Session;
 
 // constanta
 define("PAID", "Paid");
@@ -64,15 +44,15 @@ function fUnixDate($date='') {
 
 public function fnum($num) {
   $num=intval($num);
-  return number_format($num,0);
+  return number_format($num,0);	
 }
-
+ 
 function space($num) {
-  return str_repeat(' ',$num);
+  return str_repeat(' ',$num);	
 }
 
 function getProdBalance($Pcode) {
-  $stockIn = DB::table('transdetail')->select('Qty')->where('ProductCode',$Pcode)->sum('Qty');
+  $stockIn = DB::table('transdetail')->select('ReceiveQty')->where('ProductCode',$Pcode)->sum('ReceiveQty');
 	$stockOut = DB::table('transdetail')->select('SentQty')->where('ProductCode',$Pcode)->sum('SentQty');
   return (object)['Qty'=>$stockIn-$stockOut, 'In'=>$stockIn, 'Out'=>$stockOut];
 }
@@ -100,7 +80,7 @@ function makeCaption($jr='', $nm='') {
    	if ($jr == 'AR') return 'Data Receive Payments '.$nm;
    	if ($jr == 'EX') return 'Data Expenses '.$nm;
    }*/
-
+   
     $label ='';
     if ($jr=='customer') $label = 'Customer';
     if ($jr=='supplier') $label =  'Supplier';
@@ -119,6 +99,13 @@ function makeCaption($jr='', $nm='') {
 
 }
 
+function makeTableList($caption) {
+  $head= '<th>'.implode('</th><th>',$caption).'</th>';
+  $head= '<thead><tr>'.$head.'</tr></thead>';
+  $tbl= $head.'<tbody></tbody>';
+  // $tbl= str_replace('<th>Status</th>','',$tbl); //debug nanti di benerin
+  return $tbl;
+}
 
 
 public function api($type='GET', $url, $defValue=[]) {
@@ -127,7 +114,7 @@ public function api($type='GET', $url, $defValue=[]) {
       //$url    = !empty($api['url']) ? $api['url'] : $this->cpm_uri();
       //$api    = $client->request($method, env('API_LUMEN') . $url, $param);
       //$res    = json_decode($api->getBody());
-
+             
       /*$api = $client->request('GET',"http://localhost:8000/ajax_getCustomer/C-0166", [
          'auth' => ['user', 'pass']
       ]);*/
@@ -137,7 +124,6 @@ public function api($type='GET', $url, $defValue=[]) {
       if(substr($base_url,-1)!='/') $base_url.='/';
 
       $api = $client->request($type, $base_url.$url); //ini yang jalan
-      
       //dd($api);
       $res    = json_decode($api->getBody());
 
@@ -173,173 +159,7 @@ public static function xxx($api) {
 	echo 'xxxx';
 }
 
-// function modalData($modal)
-// {
-//   $data = [];
-//   if(in_array('mCat', $modal)) $data['mCat'] = $this->DB_list('masterproductcategory', 'Category');
-//   if(in_array('mCustomer', $modal)) $data['mCustomer'] = DB::table('masteraccount')->where('AccType', 'C')->get();
-//   if(in_array('mSupplier', $modal)) $data['mSupplier'] = DB::table('masteraccount')->select('AccCode','AccName','Category')->where('AccType', 'S')->get();
-//   if(in_array('mProduct', $modal)) $data['mProduct'] = json_encode(DB::table('masterproduct')->select('Code','Name','Category')->where('ActiveProduct',1)->get());
-//   if(in_array('mPurchaseQuotation', $modal)) $data['mPurchaseQuotation'] = ['Raw material','Finish good'];
-//   if(in_array('mWarehouse', $modal)) $data['mWarehouse'] = $this->DB_list('masterwarehouse', ['warehouse','warehousename']); //DB::table('masterwarehouse')->select('warehouse','warehousename')->get(),
-//   // if(in_array('mPayType', $modal)) $data['mPayType'] =  $this->DB_list('common',['id','name1'], "category='Payment' "); //Common::getData('Payment')->data,
-//   if(in_array('mPayType', $modal)) $data['mPayType'] =  DB::table('common')->select('id','name1')->where('category','Payment')->get(); //Common::getData('Payment')->data,
-//   //if(in_array('mSalesman', $modal)) $data['mSalesman'] = $this->DB_list('mastersalesman', 'Name');
-//   if(in_array('mSalesman', $modal)) $data['mSalesman'] = DB::table('mastersalesman')->select('Code','Name')->get();
-//   if(in_array('mAddr', $modal)) $data['mAddr'] = []; //json_encode(DB::table('masteraccount')->where('AccCode', 'C')->get() ),
-//   if(in_array('mCat', $modal)) $data['mCat'] = $this->DB_list('masterproductcategory', 'Category');
-//   if(in_array('mAccount', $modal)) $data['mAccount'] = json_encode(db::table('mastercoa')->select('AccNo','AccName','CatName')->get() );
-//   if(in_array('mDO', $modal)) $data['mDO'] = [];
-//   if(in_array('mSO', $modal)) $data['mSO'] = DB::table('orderhead')->select('TransNo','TransDate','Total','AccCode','AccName','DeliveryTo')
-//                 ->whereRaw("left(TransNo,2)='SO' ")->where("Status", "1")
-//                 ->orderBy('TransDate', 'desc')->get();
-//   if(in_array('mInvUnpaid', $modal)) $data['mInvUnpaid'] = json_encode(Invoice::select('TransNo','TransDate')->get() );
-
-//   return $data;
-// }
-function modalData($arr) {
-  	$out = [];
-  	foreach($arr as $r) {
-		switch($r) {
-			case 'modAccount':
-				$dat= Account::select('id','AccNo','AccName','Catname');
-				break;
-			case 'modAccount-AR':
-				$dat= Account::select('id','AccNo','AccName','Catname')->where('CatName','Accounts Receivable (A/R)');
-				break;
-			case 'modAccount-AP':
-				$dat= Account::select('id','AccNo','AccName','Catname')->where('CatName','Accounts Payable (A/P)');
-				break;
-			case 'modBankAccount':
-				$dat= Account::select('id','AccNo','AccName')->where('CatName','Cash & Bank');
-				break;
-	        case 'modSalesman':
-          		$dat= Salesman::select('Code','Code','Name');
-          		break;
-			case 'modProduct':
-				$dat= Product::select('Code','Code','Name','Category');
-				break;
-			case 'modSO':
-				//$dat= Order::select('TransNo','TransDate','Total')->where('AccCode','CS01');
-				$dat= Order::where('AccCode','CS01');
-				break;
-			default:
-				$dat = [];
-		}
-		//if($dat!=[]) $dat = $dat->where('Token', session('user')->Token)->get()->toArray();
-		if($dat!=[]) $dat = $dat->get()->toArray();
-		//dd($dat);
-		
-		// $dat2=[];
-		// foreach($dat as $dt) {
-		//   $key = array_keys($dt); $colCount = count($key);
-		//   if ($colCount==1) { $dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[0]] ]; }
-		//   if ($colCount==2) { $dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[0]].'|'.$dt[$key[1]] ]; }
-		//   if ($colCount>2)  {
-		//     $dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[1]].'|'.$dt[$key[2]] ];
-		//   }
-		// }
-		// $out[$r] = $dat2;
-		//$out[$r] = $dat;
-		//$out = $dat->get();
-		$out = $dat;
-  	}
-  	//return (object)$out;
-  	return json_encode($out);
-}
-
-function selectData($arr) {
-	$out = [];
-	foreach($arr as $r) {
-		switch($r) {
-			case 'selPayment':
-				$cat = substr($r, 3);
-				$dat= Common::select('name2','name1')->where('category',$cat);
-			break;
-			case 'selPriceLevel':
-				$dat= [['Level'=>'Level1'],['Level'=>'Level2'],['Level'=>'Level3']];
-				break;
-					case 'selProduct':
-						$dat= Product::select('Code','Name');
-				break;
-			case 'selProductCategory':
-				$dat= ProductCategory::select('Category');
-				break;
-			case 'selProductType':
-				$dat= [['id'=>'RAW', 'name'=>'Raw material'],['id'=>'FINISH', 'name'=>'Finish good']];
-				break;
-			case 'selCustomer':
-			case 'selSupplier':
-				$acctype = ($r=='selSupplier')? 'S':'C';
-				$dat= CustomerSupplier::selectRaw("AccCode,concat(AccCode,'|',AccName)")->where('AccType',$acctype);
-				break;
-			case 'selCustomerSupplierCategory':
-				$dat= CustomerSupplierCategory::select('Category');
-				break;
-			case 'selHPP':
-				$dat= [['id'=>'Avg', 'name'=>'Average']];
-				break;
-			case 'selSalesman':
-				$dat= Salesman::select('Code','Name');
-				break;
-			case 'selWarehouse':
-				$dat= Warehouse::selectRaw("warehouse,concat(warehouse,'|',warehousename)as text");
-				break;
-			case 'selAccount':
-				$dat= Account::select('id','AccNo','AccName');
-				break;
-      		case 'selAccountCategory':
-        		$dta = ['Cash & Bank',                
-					'Accounts Receivable (A/R)',  
-					'Other Current Assets',       
-					'Fixed Assets',               
-					'Accounts Payable (A/P)',     
-					'Other Current Liabilities',  
-					'Equity',                     
-					'Income',                     
-					'Cost of Sales',              
-					'Expenses',                   
-					'Other Income',               
-					'Other Expense'
-				];
-        		$dat = [];
-        		foreach($dta as $dt) { $dat[] = ['id'=>$dt, 'text'=>$dt]; }
-        		break;
-			case 'selBankAccount':
-				$dat= Account::select('id','AccNo','AccName')->where('CatName','Cash & Bank');
-				break;
-		}
-			if (!is_array($dat)) { //if using database
-				//$dat = $dat->where('Token', session('user')->Token)->get()->toArray();
-				$dat = $dat->get()->toArray();
-			}
-		$dat2=[];
-		foreach($dat as $dt) {
-			//dd($dt);
-			$key = array_keys($dt); $colCount = count($key);
-			//dd($key);
-			/*if ($colCount==1) { $dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[0]] ]; }
-			if ($colCount==2) { $dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[0]].' - '.$dt[$key[1]] ]; }
-			if ($colCount>2)  {
-			  $dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[1]].' - '.$dt[$key[2]] ];
-			}*/
-			$txt = str_replace('|', ' - ', $dt[$key[1]]);
-			//$dat2[] = ['id'=>$dt[$key[0]], 'text'=>$dt[$key[1]] ];
-			$dat2[] = ['id'=>$dt[$key[0]], 'text'=>$txt ];
-		}
-		$out[$r] = $dat2;
-	}
-	//dd($out);
-	return (object)$out;
-}
-
-  function getTransStatus($id) {
-    return "[NA]";
-  }
-
-  
-
-  // DB function --------------------------
+// DB function --------------------------
 function DB_FieldSelect($fldSel) {
   global $request;
   $fld=[];
@@ -362,13 +182,13 @@ function DB_select($sql) {
 }
 
 function DB_array($db, $fld='*', $where='') {
-      if($where!='') $where="AND ".$where." ";
-      $sql="SELECT $fld FROM $db WHERE Token='".sess('Token')."' ".$where;
+      if($where!='') $where="WHERE ".$where." ";
+      $sql="SELECT $fld FROM $db ".$where;
       $dat=DB::select($sql);
       $dat = json_decode(json_encode($dat), True);
       return $dat;
     }
-
+    
 function DB_list($db, $fld, $where = '') { //for combolist
     if (!is_array($fld)) {
         $dat= $this->DB_array($db, $fld, $where);
@@ -434,7 +254,7 @@ function profile_image($img) {
 }
 
 function fdate($dts) {
-  //  yyyy-mm-dd -> dd/mm/yyyy
+  //  yyyy-mm-dd -> dd/mm/yyyy 
   $dt = strtotime($dts);
   return date('d/m/Y', $dt);
 }

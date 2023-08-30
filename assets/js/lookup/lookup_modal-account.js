@@ -17,13 +17,14 @@ function agGrid_getIndex(gridOptions, key, find) {
 $(function () {
     $(document).ready(function () {
         $("#listCoa a.lookup-item").click(function (e) {
+            alert('accounts')
             e.preventDefault();
             e.lookup_id = $(this).closest('div.modal').attr('id')
             var itm = $(this).text(); //get modal id
 
             //search lookup data
             selRow = mCoa[ $(this).attr('rowIdx') ];
-
+            
             $('div.modal').modal('hide')
             grid_afterLookupClose(e);
         });

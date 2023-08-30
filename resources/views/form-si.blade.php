@@ -54,14 +54,10 @@
                         {!! Form::_mselect('PaymentType', $select->selPayment, $data->PaymentType??'') !!}
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="inputEmail4">Salesman</label>
-                        {!! Form::_mselect('Salesman', $select->selSalesman, $data->selSalesman??'') !!}
-                        {{-- {{ Form2::select('Salesman', 'Salesman2', $select->selSalesman??[] ) }} --}}
+                        {{ Form::select('Salesman', 'Salesman', $mSalesman, $data->Salesman??'' ) }}
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="inputEmail4">Warehouse</label>
-                        {!! Form::_mselect('Warehouse', $select->selWarehouse, $data->selWarehouse??'') !!}
-                        {{-- {{ Form::select('Warehouse', 'Delivery to / Warehouse', $mWarehouse, $data->Warehouse ?? '' ) }} --}}
+                        {{ Form::select('Warehouse', 'Delivery to / Warehouse', $mWarehouse, $data->Warehouse ?? '' ) }}
                     </div>
                 </div>
                 <hr/>
@@ -87,9 +83,9 @@
                                 </select>
 						    </div>
 					    </div>
-                        {{-- {{ Form::select('PaymentType', 'Payment Type', $mPayType, $data->PaymentType??'' ) }} --}}
-                        {{-- {{ Form::text('DueDate', 'Due Date', $data->DueDate??NOW, ['readonly'=>true]) }} --}}
-                        {{-- {{ Form::select('Salesman', 'Salesman', $mSalesman, $data->Salesman??'' ) }} --}}
+                        {{ Form::select('PaymentType', 'Payment Type', $mPayType, $data->PaymentType??'' ) }}
+                        {{ Form::text('DueDate', 'Due Date', $data->DueDate??NOW, ['readonly'=>true]) }}
+                        {{ Form::select('Salesman', 'Salesman', $mSalesman, $data->Salesman??'' ) }}
                     </div>
                 </div>
                 -->
@@ -141,7 +137,6 @@
     <script src="{{ asset('assets/plugin/ag-grid/ag-grid-community.min.noStyle.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/textwlookup.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/lookup/lookup.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/js/helper_mselect.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/helper_grid.js') }}" type="text/javascript"></script>
     
     <script>
@@ -150,8 +145,24 @@
         var selModal = null;
         var lookup_target_button = null;
 
-        //load grid data
-        var griddata = {!! json_encode($griddata) !!}
+        //init select box
+        $('select#AccCode').select2({
+            placeholder: `Choose a Customer`,
+            templateResult: function(data) {
+                console.log(data)
+                var result = jQuery(
+                    '<div class="row">' +
+                        '<div class="col-md-3">' + data.id + '</div>' +
+                        '<div class="col-md-9">' + data.text + '</div>' +
+                    '</div>'
+                );
+                return result;
+            },
+        });
+
+        //load data
+        var mydata = {!! json_encode($griddata) !!}
+        var mPayType = {!! json_encode($mPayType) !!}
 
         //init ag-grid
         var colModel = [
@@ -164,31 +175,30 @@
         ];
         
         var gridOptions = {
-            //columnDefs: colModel,
-            columnDefs: setColModel(colModel),
-            rowData: griddata,
+            columnDefs: colModel,
+            rowData: mydata,
             caption: 'Grid Order',
             enableCellChangeFlash: true,
             editType: 'fullRow',
             rowSelection: 'single',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
                 allOfTheData = [];
                 for (var i = 0; i < 4; i++) {
                     //allOfTheData.push(createRowData(sequenceId++));
-                    allOfTheData.push(griddata[i]);
+                    allOfTheData.push(mydata[i]);
                 }
             },
             components: {
@@ -202,19 +212,7 @@
         $(document).ready(function() {
             //init page
             $(':input[type=number]').on('mousewheel',function(e){ $(this).blur();  });
-            //$('select.select2').select2({ theme: "bootstrap" });
-
-            //init select box
-            var selData = [
-                ['AccCode', 'Customer'],
-                ['PaymentType', 'Payment'],
-                ['Salesman', 'Salesman'],
-                ['Warehouse', 'Warehouse'],
-            ];
-            for(let dt of selData) {
-                var obj = $('select#'+dt[0]);
-                init_mselect(obj, dt);
-            }
+            $('select.select2').select2({ theme: "bootstrap" });
             
             var selRow =[];
             var xgd =  document.querySelector('#xgrid');
@@ -238,8 +236,8 @@
             //add new line
             $("button#cmAddrow").click(function(e){
                 var newLine = { ProductCode:'', ProductName:'', Qty:0, Price:0 }
-                griddata.push(newLine)
-                gridOptions.api.setRowData(griddata);
+                mydata.push(newLine)
+                gridOptions.api.setRowData(mydata);
             });
             //delete row 
             $(document).on('click','button.cmDelrow',function(e){
@@ -296,7 +294,7 @@
                 if (resp.statusText=='OK') {
                     let dat = await resp.json();
                     let opt = '';
-                    //console.log(dat)
+                    console.log(dat)
                     for(let dt of dat) opt += `<option value="${dt.DONo}">${dt.DONo}</option>`;
                     $('select#OrderNo').html(opt); 
 
@@ -305,7 +303,7 @@
                     if (resp.statusText=='OK') {
                         let dat = await resp.json();
                         for(let dt of dat ) {
-                            griddata.push( { 
+                            mydata.push( { 
                                 ProductCode: dt.ProductCode,
                                 ProductName: dt.ProductName,
                                 Memo: dt.Memo, 
@@ -313,21 +311,21 @@
                                 Price: dt.Price,
                             }); 
                         }
-                        gridOptions.api.setRowData(griddata);
+                        gridOptions.api.setRowData(mydata);
                     }
                 }
             } catch(error) {
-                //console.log(error)
+                console.log(error)
             }
         }
 
         function calcAll() {
             var tot = 0;
-            for(let r of griddata) {
+            for(let r of mydata) {
                 r.Amount = parseInt(r.SentQty) * parseInt(r.Price);
                 tot+= r.Amount;
             }
-            gridOptions.api.setRowData(griddata);
+            gridOptions.api.setRowData(mydata);
             var gtot    = tot - $('#DiscAmountH').val() + $('#TaxAmount').val();
             var unpaid  = gtot - $('#FirstPayment').val(); 
             

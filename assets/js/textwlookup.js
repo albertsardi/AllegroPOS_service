@@ -14,7 +14,7 @@ $.fn.textwlookup = function(val, label2) {
 
 
 $(document).ready(function () {
-    $('.xselect2').each(async function (i) {
+    $('.select2').each(async function (i) {
         var sel = $('#' + $(this).attr('id'))
         var api = $(this).attr('api')
         sel.select2({
@@ -70,11 +70,11 @@ $(document).ready(function () {
         }
     });
 
-
-    $('.select2').on("select2:select", function (e) {
+    
+    $('.select2').on("select2:select", function (e) { 
         console.log(e.params.data)
     });
-
+    
     // $('#AccCode').val({id:'CS01'}).trigger('change');
     // $('#AccCode').val('CS01').trigger('change');
     // $('#AccCode').val(3).trigger('change');
@@ -84,4 +84,4 @@ $(document).ready(function () {
     // $('#AccCode').val(3).select2().trigger('change');
     //$('#AccCode').val( { id: "AKI001", text: "KO AKI", selected: true })
 
-});
+}); 

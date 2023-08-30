@@ -64,6 +64,9 @@ final class CompletionInput extends ArgvInput
         return $input;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function bind(InputDefinition $definition): void
     {
         parent::bind($definition);
@@ -81,7 +84,7 @@ final class CompletionInput extends ArgvInput
                 return;
             }
 
-            if ($option?->acceptValue()) {
+            if (null !== $option && $option->acceptValue()) {
                 $this->completionType = self::TYPE_OPTION_VALUE;
                 $this->completionName = $option->getName();
                 $this->completionValue = $optionValue ?: (!str_starts_with($optionToken, '--') ? substr($optionToken, 2) : '');
@@ -94,7 +97,7 @@ final class CompletionInput extends ArgvInput
         if ('-' === $previousToken[0] && '' !== trim($previousToken, '-')) {
             // check if previous option accepted a value
             $previousOption = $this->getOptionFromToken($previousToken);
-            if ($previousOption?->acceptValue()) {
+            if (null !== $previousOption && $previousOption->acceptValue()) {
                 $this->completionType = self::TYPE_OPTION_VALUE;
                 $this->completionName = $previousOption->getName();
                 $this->completionValue = $relevantToken;
@@ -106,12 +109,12 @@ final class CompletionInput extends ArgvInput
         // complete argument value
         $this->completionType = self::TYPE_ARGUMENT_VALUE;
 
-        foreach ($this->definition->getArguments() as $argumentName => $argument) {
-            if (!isset($this->arguments[$argumentName])) {
+        $arguments = $this->getArguments();
+        foreach ($arguments as $argumentName => $argumentValue) {
+            if (null === $argumentValue) {
                 break;
             }
 
-            $argumentValue = $this->arguments[$argumentName];
             $this->completionName = $argumentName;
             if (\is_array($argumentValue)) {
                 $this->completionValue = $argumentValue ? $argumentValue[array_key_last($argumentValue)] : null;
@@ -121,7 +124,7 @@ final class CompletionInput extends ArgvInput
         }
 
         if ($this->currentIndex >= \count($this->tokens)) {
-            if (!isset($this->arguments[$argumentName]) || $this->definition->getArgument($argumentName)->isArray()) {
+            if (null === $arguments[$argumentName] || $this->definition->getArgument($argumentName)->isArray()) {
                 $this->completionName = $argumentName;
                 $this->completionValue = '';
             } else {
@@ -180,7 +183,7 @@ final class CompletionInput extends ArgvInput
     {
         try {
             return parent::parseToken($token, $parseOptions);
-        } catch (RuntimeException) {
+        } catch (RuntimeException $e) {
             // suppress errors, completed input is almost never valid
         }
 

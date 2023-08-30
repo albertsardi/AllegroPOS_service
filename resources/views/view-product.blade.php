@@ -433,7 +433,7 @@
 		//cmSave click
         $('button#cmSave').click(function() {
             //form_save('form', 'customer' );
-            //console.log(xx);
+            console.log(xx);
         });
 
 	});

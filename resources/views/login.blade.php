@@ -31,7 +31,7 @@
     <link href="{{ asset('assets/plugin/metro/css/metro-all.css') }}" rel="stylesheet" type="text/css" >
 
 
-    <title>Allegro.ID :: Login</title>
+    <title>Login form demo - Metro 4 :: Popular HTML, CSS and JS library</title>
 
     <style>
         .login-form {
@@ -72,7 +72,7 @@
             <div class='row'><hr></div>
             for demo use <br/>
             user: admin <br/>
-            pass: 1234 <br/>
+            pass: 123 <br/>
         </div>
     </form>
 

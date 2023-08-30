@@ -17,8 +17,10 @@ use App\Http\Model\Expense;
 use App\Http\Model\Warehouse;
 use App\Http\Model\CustomerSupplier;
 use App\Http\Model\Journal;
-use \koolreport\export\Exportable;
-use \koolreport\excel\ExcelExportable;
+use \koolreport\widgets\koolphp\Table;
+// use \koolreport\widgets\google\ColumnChart;
+// use \koolreport\widgets\google\PieChart;
+// use \koolreport\export\Exportable;
 use Session;
 
 class TestController extends MainController {
@@ -39,7 +41,7 @@ class TestController extends MainController {
         $report = new MyReport;
         $report->run();
 		$cur = 'Rp.';
-		$tbl1 = DB::table('masterproduct')->limit(20)->get();
+		$tbl1 = DB::table('masterproduct')->limit(30)->get();
 		foreach($tbl1 as $t) {
 			$t->product = $t->Code.'<br/>'.$t->Name.'<br/>'.'type; Fresh Product';
 		}
@@ -86,35 +88,6 @@ class TestController extends MainController {
         }
     }
 
-	public function koolreportchart() {
-		//return 'koolreportchartwatermark';
-        $data = [];
-        $data = DB::table("journal")->selectRaw('AccNo,sum(abs(Amount))as Amount')->groupBy('AccNo')->limit(10)->get();
-        $data = $data->toArray();
-        $report = new MyReport;
-        $report->run();
-        return view('test/koolreport-chart', ['data'=>$data,'caption'=>'koolreport-chart','jr'=>'chart']);
-	}
-
-    public function koolreportchart_pdf() {
-        $pdfPath = 'exportPdf/';
-        $report = new MyReport;
-        $data = DB::table("journal")->selectRaw('AccNo,sum(abs(Amount))as Amount')->groupBy('AccNo')->limit(10)->get();
-        $data = $data->toArray();
-        $report->rdata['report-header'] = 'Report Master Data List';
-        $report->rdata['data'] = $data;
-        // dd($data);
-        return $report->run()->export($pdfPath.'koolreport-chart_pdf')
-                    ->settings([
-                        // "useLocalTempFolder" => true,
-                    ])
-                    ->pdf([
-                        'format'=>'A4',
-                        'orientation'=>'portrait',
-                    ])->toBrowser("myreport.pdf");
-}
-	
-
 	public function report_export($data, $pdfFile='examPdf', $useLocal=true) {
         //$PhantomLinuxPath = '/var/www/html/staging/asnb/web/CPM/vendor/koolreport/export/bin/phantomjs';
         //$PhantomWinPath = "C:/xampp2/htdocs/CPM/vendor/koolreport/export/bin/phantomjs"; 
@@ -124,18 +97,7 @@ class TestController extends MainController {
         $exportDir = '../../resources/views/';
 		$report = new CPMExport;
         $report->data = $data;
-        return $report->run()->export($pdfPath.$pdfFile)
-                    ->settings([
-                        // "useLocalTempFolder" => true,
-                    ])
-                    ->pdf([
-                        'format'=>'A4',
-                        'orientation'=>'portrait',
-                    ])->toBrowser("myreport.pdf");
-
-
-
-        /*$report->run()
+        $report->run()
             ->export($exportDir.$pdfFile)
             ->settings([
                 // sudah di coba not use local but fail
@@ -153,11 +115,11 @@ class TestController extends MainController {
             ->pdf(array(
                 "format"        => "A4",
                 "orientation"   => "portrait",
-                "margin"        => "0.2in",
-                "zoom"        => .9 
+                "margin"        => "1in",
+                //"zoom"        => .9 
                 //"zoom"        =>  (strtolower(env('EXPORT_SERVER'))=='win')? 0.9 : 0.7 //was .9
             ))
-            ->toBrowser("export.pdf", true); */
+            ->toBrowser("export.pdf", true);
     }
 
 	/* test make docraptor */

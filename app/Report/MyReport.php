@@ -44,5 +44,81 @@ class MyReport extends \koolreport\KoolReport
             )
         );
     }    
+    /*function setup() {
+        // dd($this);
+        //dd($this->dataStore("result"));
+        $this->src('data')
+            ->pipe($this->dataStore("result"));
+    } */
+    // function setup() {
+    //     $node = $this->src('dollarsales')
+    //     //->query('select *, dollar_sales as dollar_sales2 from customer_product_dollarsales2')
+    //     ->pipe(new Map([
+    //         '{value}' => function($row, $meta) {
+    //             //dd($row);
+    //             //dd($row['orderQuarter']);
+    //             $row['orderQuarter'] = 'Q' . $row['orderQuarter'];
+    //             return $row;
+    //         },
+    //         '{meta}' => function($meta) {
+    //             //dd($meta);
+    //             $meta['columns']['orderDate']['type'] = 'datetime';
+    //             $meta['columns']['orderQuarter']['type'] = 'string';
+    //             return $meta;
+    //         }
+    //     ]))
+    //     ;
+
+    //     $node
+    //     ->pipe(new Limit(array(
+    //         50, 0
+    //     )))
+    //     ->pipe(new Map([
+    //         "{meta}" => function($meta) {
+    //             $cMeta = & $meta["columns"]["dollar_sales"];
+    //             $cMeta["footer"] = "sum";
+    //             $cMeta["type"] = "number";
+    //             // print_r($meta); exit;
+    //             return $meta;
+    //         }
+    //     ]))
+    //     ->pipe($this->dataStore('orders'));
+
+    //     $node->pipe(new Cube(array(
+    //         "rows" => "customerName",
+    //         "column" => "orderQuarter",
+    //         "sum" => "dollar_sales",
+    //     )))
+    //     ->pipe(new Limit(array(
+    //         5, 0
+    //     )))
+    //     ->pipe($this->dataStore('salesQuarterCustomer'));
+
+    //     $node->pipe(new Cube(array(
+    //         "rows" => "productName",
+    //         "column" => "orderQuarter",
+    //         "sum" => "dollar_sales",
+    //     )))
+    //     ->pipe(new Limit(array(
+    //         5, 0
+    //     )))
+    //     ->pipe($this->dataStore('salesQuarterProduct'));
+
+    //     $node
+    //     ->pipe(new Filter(array(
+    //         array('customerName', '<', 'Au'),
+    //         array('orderYear', '>', 2003),
+    //     )))
+    //     ->pipe(new Pivot(array(
+    //         "dimensions" => array(
+    //             "column" => "orderYear, orderQuarter",
+    //             "row" => "customerName, productLine",
+    //         ),
+    //         "aggregates" => array(
+    //             "sum" => "dollar_sales",
+    //         ),
+    //     )))
+    //     ->pipe($this->dataStore('salesPivot'));
+    // }
 
 }

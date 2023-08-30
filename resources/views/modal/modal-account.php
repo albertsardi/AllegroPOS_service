@@ -29,7 +29,7 @@ $('#listCoa').DataTable({
             paging: true,
             pageLength: 10,
             pagingType: "full_numbers",
-            //data: {!! $mAccount !!},
+            data: {!! $mAccount !!},
             columns: [
                 {
                     data: null,

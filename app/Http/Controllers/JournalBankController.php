@@ -125,6 +125,7 @@ class JournalBankController extends MainController {
 			$db= 'transpaymentarap';
 			$fld= ['InvNo', 'AmountPaid'];
 			$query2= $this->egrid_query($db, $fld, 'InvNo', ['TransNo'=>$id, 'Memo'=>'']);
+			dd($query2);
 		}
 		//save IN, DO
 		if( in_array($jr, ['DO','IN']) ) {

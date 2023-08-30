@@ -22,51 +22,50 @@ class AppController extends MainController
     //require 'helper_table.php';
     //$cn=db_connect();
     $yr=date('Y');
-    $yr='2019'; //debug
+    $yr='2018'; //debug
 
     //Chart1
-    $sales = $this->salesbyyear($yr);
-    $profit = $this->profitbyyear($yr);
-    $chart1_sales = json_encode($sales);
-    $chart1_profit = json_encode($profit);
-    // dd($profit);
+    //$sales = $this->salesbyyear($yr);
+    //$profit = $this->profitbyyear($yr);
+    //$chart1_sales = json_encode($sales);
+    //$chart1_profit = json_encode($profit);
 
     //Chart2
-    $dat = $this->salesbyyear($yr);
-    $chart2_data1 = json_encode($dat);
-    $dat = $this->salesbyyear($yr-1);
-    $chart2_data2 = json_encode($dat);
+    //$dat = $this->salesbyyear($yr);
+    //$chart2_data1 = json_encode($dat);
+    //$dat = $this->salesbyyear($yr-1);
+    //$chart2_data2 = json_encode($dat);
+
 
     //Pie Chart
-    $dat = $this->salesbycategory($yr);
-    $piechart_data = json_encode(arr::pluck($dat,'total'));
-    $piechart_label = json_encode(arr::pluck($dat,'category'));
-    //dd($piechart_data);
+    //$dat = $this->salesbycategory($yr);
+    //$piechart_data = json_encode(arr::pluck($dat,'total'));
+    //$piechart_label = json_encode(arr::pluck($dat,'category'));
 
     //Donut Chart (Top 5 Customer)
-    $dat = $this->top5salesbycustomer($yr);
-    $donutchart_data = json_encode(arr::pluck($dat,'total'));
-    $donutchart_label = json_encode(arr::pluck($dat,'acccode'));
+    //$dat = $this->top5salesbycustomer($yr);
+    //$donutchart_data = json_encode(arr::pluck($dat,'total'));
+    //$donutchart_label = json_encode(arr::pluck($dat,'acccode'));
 
     //Table Expense
-    $dat = $this->expenselist($yr);
-    $tableexp_data = $dat;
-    $tableexp_label = (arr::pluck($dat,'accname'));
+    //$dat = $this->expenselist($yr);
+    //$tablechart_data = $dat;
+    //$tablechart_label = (arr::pluck($dat,'accname'));
 
 
     //show view
-    // $data=['xtable'=>'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    //         'chart1_sales'=>$chart1_sales,
-    //         'chart1_profit'=>$chart1_profit,
-    //         'chart2_data1'=>$chart2_data1,
-    //         'chart2_data2'=>$chart2_data2,
-    //         'piechart_data'=>$piechart_data,
-    //         'piechart_label'=>$piechart_label,
-    //         'donutchart_data'=>$donutchart_data,
-    //         'donutchart_label'=>$donutchart_label,
-    //         'yr'=>$yr
-    // ];
-    $data=['table'=>'',
+    /*$data=['xtable'=>'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'chart1_sales'=>$chart1_sales,
+            'chart1_profit'=>$chart1_profit,
+            'chart2_data1'=>$chart2_data1,
+            'chart2_data2'=>$chart2_data2,
+            'piechart_data'=>$piechart_data,
+            'piechart_label'=>$piechart_label,
+            'donutchart_data'=>$donutchart_data,
+            'donutchart_label'=>$donutchart_label,
+            'yr'=>$yr
+    ];*/
+    $data=['xtable'=>'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
             'chart1_sales'=>'',
             'chart1_profit'=>'',
             'chart2_data1'=>'',
@@ -75,7 +74,6 @@ class AppController extends MainController
             'piechart_label'=>'',
             'donutchart_data'=>'',
             'donutchart_label'=>'',
-            'tableexp_data'=>$tableexp_data,
             'yr'=>$yr
     ];
     //return View::make('dashboard', $data);
@@ -108,7 +106,7 @@ class AppController extends MainController
         'comp'      => DB::table('mastermycompany')->first(),
         'data'      => (array)Parameter::GetData()->data,
     ];
-    $data['data']['CreatedDate']='createDate';
+    $data['data']['CreatedDate']='createDate'; 
     $data['data']['CreatedBy']= 'createBy';
     return view('setting', $data);
   }
@@ -117,7 +115,7 @@ function setting_save(Request $req) {
     $input = $req->all();
     DB::beginTransaction();
     try {
-        //company
+        //company 
         $data = [
             'Name'              => (string)$req->Name ?? '',
             'LogoPath'          => (string)$req->LogoPath ?? '',
@@ -133,13 +131,14 @@ function setting_save(Request $req) {
         $cm->truncate();
         $cm = Company::create($data);
         $cm->save();
-
+        
         //parameter
         $pm = new Parameter();
         $pm->truncate();
         $pcat = ['Sales','Purchase','Product','Account','User','Date'];
         foreach($pcat as $cat) {
             foreach($input as $key=>$v) {
+                dd($key);
                 if (str_starts_with(strtoupper($key), strtoupper($cat.'_'))) {
                     $pm = new Parameter();
                     $pname = str_replace($cat.'_', '', $key);
@@ -155,14 +154,14 @@ function setting_save(Request $req) {
     }
     catch (Exception $e) {
         DB::rollback();
-        //console.log(['save Error', $e->getMessage()]);
+        console.log(['save Error', $e->getMessage()]);
         //return redirect(url( "setting" ))->with('error', $e->getMessage());
       }
 }
 
 function makechart($id) {
-  $yr=2018; //test
   //return dd($id);
+  $yr=2018;
   switch ($id) {
     case 'salesvsprofit':
         return [$this->profitbyyear($yr), $this->salesbyyear($yr) ];
@@ -174,13 +173,13 @@ function makechart($id) {
         return $this->profitbyyear($yr);
         break;
     case 'salesamountbycategory':
-        $dat= $this->salesbycategory($yr);
+        $dat= $this->salesbycategory(2018);
         $xdat[0] = (arr::pluck($dat,'category'));
         $xdat[1] = (arr::pluck($dat,'total'));
         return $xdat;
         break;
     case 'top5salesbycustomer':
-        $dat = $this->top5salesbycustomer($yr);
+        $dat = $this->top5salesbycustomer(2018);
         //$donutchart_data = json_encode(arr::pluck($dat,'total'));
         //$donutchart_label = json_encode(arr::pluck($dat,'acccode'));
         //return $donutchart_data;
@@ -190,8 +189,9 @@ function makechart($id) {
         //return [$xdat[0] , $xdat[1]];
         return $xdat;
         break;
+    
     case 'expenselistbyamount':
-        return $this->expenselist($yr);
+        return $this->expenselist(2018);
         break;
   }
 }
@@ -207,7 +207,7 @@ function salesbyyear($yr=null) {
     //return "[12, 14, 6, 7, 13, 6, 13, 16, 10, 8, 11, 12]";
     if($yr==null) $yr=year("Y");
     $dat=DB::select("SELECT MONTH(transdate)as month,abs(SUM(total)) as total
-                            FROM transinvoice
+                            FROM transhead
                             WHERE LEFT(transno,2) IN ('IN','CM','SR')AND YEAR(transdate)='$yr'
                             GROUP BY MONTH(transdate)
                             ORDER BY MONTH(transdate) ");
@@ -224,9 +224,9 @@ function profitbyyear($yr=null) {
     if($yr==null) $yr=year("Y");
     //return "[12, 14, 6, 7, 13, 6, 13, 16, 10, 8, 11, 12]";
     $dat=DB::select("SELECT MONTH(transdate)as month,abs(SUM(-qty*price-cost)) AS total
-                            FROM transinvoice th
-                            LEFT JOIN transdetail td ON td.invno=th.transno
-                            WHERE LEFT(th.transno,2) IN ('IN','CM','SR')AND YEAR(transdate)='$yr' AND cost>0
+                            FROM transhead
+                            LEFT JOIN transdetail ON transdetail.invno=transhead.transno
+                            WHERE LEFT(transhead.transno,2) IN ('IN','CM','SR')AND YEAR(transdate)='$yr' AND cost>0
                             GROUP BY MONTH(transdate)
                             ORDER BY MONTH(transdate) ");
     $dat = json_decode(json_encode($dat), True);
@@ -237,12 +237,11 @@ function profitbyyear($yr=null) {
 function salesbycategory($yr=null) {
     if($yr==null) $yr=year("Y");
     //return "[12, 19, 3, 5, 2, 3]";
-    $dat=DB::select("SELECT category,SUM(qty*price)AS total
+    $dat=DB::select("SELECT category,SUM(qty*price)as total
                         FROM transdetail
-                        LEFT JOIN transinvoice ON transinvoice.transno=transdetail.invno
+                        LEFT JOIN transhead ON transhead.transno=transdetail.invno
                         LEFT JOIN masterproduct ON masterproduct.code=transdetail.productcode
-                        WHERE LEFT(transinvoice.transno,2) IN ('IN','CM','DO')
-                        AND YEAR(transdate)='$yr'
+                        WHERE LEFT(transhead.transno,2) IN ('IN','CM')AND YEAR(transdate)='$yr'
                         GROUP BY category ");
     //$dat = json_decode(json_encode($dat), True);
     //$xdat = $this->chart_fillyeardata($dat);
@@ -258,7 +257,7 @@ function top5salesbycustomer($yr=null) {
     //return [12, 19, 3, 5, 2, 3];
     $sql="SELECT acccode,SUM(total)AS total
             FROM transhead
-            WHERE LEFT(transno,2) IN ('IN','CM','DO')AND YEAR(transdate)='$yr'
+            WHERE LEFT(transno,2) IN ('IN','CM')AND YEAR(transdate)='$yr'
             GROUP BY acccode
             ORDER BY SUM(total) DESC ";
     $dat=$this->DB_select($sql);
@@ -281,14 +280,14 @@ function top5salesbycustomer($yr=null) {
     return $xdat;
 }
 
-function expenselist($yr=null) {
-    $yr=2018;
-    $dat = $this->DB_select("SELECT jr.accno,mastercoa.accname,SUM(amount) AS total FROM journal jr
-                        LEFT JOIN mastercoa ON mastercoa.accno=jr.accno
-                        WHERE catname IN ('Expenses','Other Expense') AND YEAR(jrdate)='$yr'
-                        GROUP BY jr.accno,mastercoa.accname
-                        HAVING total>0
-                        ORDER BY total DESC ");
+function expenselist($yr) {
+    $dat=DB::select("SELECT mastercoa.accname,SUM(amount) AS total
+                            FROM journal
+                            LEFT JOIN mastercoa ON mastercoa.accno=journal.accno
+                            WHERE catname IN ('Expenses','Other Expense') AND YEAR(jrdate)='$yr'
+                            GROUP BY journal.accno
+                            HAVING SUM(amount)>0
+                            ORDER BY total DESC ");
     for($a=0;$a<count($dat);$a++) {
         //$tot=$tot+$dat[$a]['total'];
     }
@@ -306,18 +305,16 @@ function login(Request $req) {
     return view('login', $data);
 }
 function checklogin(Request $req) {
-    session_start();
-    $user = User::GetByLoginPassword($req->user, $req->password);
+   session_start();
+   //Session::flush();
+   $user = User::GetByLoginPassword($req->user, $req->password);
+//    if ($req->user=='admin' &&  $req->password=='123') {
+//         Session::put('user','12345'); //debug
+//    }
     $user = $user->data;
     if (!empty($user)) {
-        $login = (object)[
-            'LoginName' => $user->LoginName,
-            'FullName'  => $user->FullName,
-            'UserId'    => $user->id,
-            'Token'     => $user->CompanyToken,
-        ];
-        Session::put('user', $login);
-        Session::put('token', $user->CompanyToken);
+        //return $user;
+        Session::put('user', $user); 
     }
    return redirect('/');
 }

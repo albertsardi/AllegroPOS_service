@@ -14,7 +14,6 @@
     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
     {{ Form::hidden('jr', $jr) }}   
     {{ Form::hidden('id', $id) }}   
-    {{-- <?php dump($data);?> --}}
     
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <div class="card mb-3 border-info">
@@ -30,41 +29,56 @@
                 @endphp
                 <div class="form-group">
                     @if($jr=='AR')
-                        {{-- {{ Form::select('AccCode', 'Receive payment from customer' ) }} --}}
-                        <label for="input">Receive payment from customer</label>
-                        {{-- {!! Form::_mselect('AccCode', $select->selCustomer??[], $data->AccCode??'-') !!} --}}
+                    {{ Form::select('AccNo', 'Receive payment from customer' ) }}
                     @else
-                        {{-- {{ Form::select('AccCode', 'Pay bill to supplier',  ) }} --}}
-                        <label for="input">Pay bill to supplier</label>
-                        {{-- {!! Form::_mselect('AccCode', $select->selSupplier??[], $data->AccCode??'-') !!} --}}
+                    {{ Form::select('AccNo', 'Pay bill to supplier' ) }}
                     @endif
-                    <select name='AccCode' id='AccCode' class='form-control form-control-sm w-100' autocomplete='off'></select>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        {{ Form::text('TransNo', 'Payment #' ) }}
+                        {{ Form::text('ReffNo', 'Payment #' ) }}
                     </div>
                     <div class="form-group col-md-4">
-                        {{ Form::date('TransDate', 'Date', date('d/m/Y')) }}
+                        {{ Form::date('TransDate', 'Date' ) }}
                     </div>
                     <div class="form-group col-md-4">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-8">
-                        {{-- {{ Form::select('toAccNo', 'to Bank Account', $select->selBankAccount ) }} --}}
-                        <label for="input">to Bank Account1</label>
-                        {{-- {!! Form::_mselect('toAccNo', $select->selBankAccount??[] ) !!} --}}
-                        <select name='AccNo' id='AccNo' class='form-control form-control-sm w-100' autocomplete='off'></select>
+                        {{ Form::select('AccNo', 'to Bank Account' ) }}
                     </div>
                     <div class="form-group col-md-4">
-                        {{ Form::number('Total', 'Payment Amount' ) }}
+                        {{ Form::number('Amount', 'Payment Amount' ) }}
                     </div>
                 </div>
                 <hr/>
 
 
-                
+                <!--
+                design lama
+                <div class='row  xxjustify-content-md-center'>    
+                    {{-- leff side --}}
+                    <div class="col-sm-5 col-md-5 col-lg-3 float-left">
+                        {{ Form::checkbox('Code', 'Reff #') }}
+                        {{ Form::text('ReffNo', 'Reff #') }}
+                        {{ Form::number('Amount', 'Pay Amount') }}
+                    </div>
+                    <div class="col-sm-2 col-md-2 col-lg-3"> </div>
+                    {{-- righsideside --}}
+                    <div class="col-sm-5 col-md-5 col-lg-3 float-right">
+                        {{ Form::text('TransNo', 'Payment #') }}
+                        {{ Form::date('TransDate', 'Payment Date') }}
+                        @php $label = ($jr=='AR')? 'to Bank Account':'from Bank Account';@endphp
+                        {{ Form::textwlookup('toAccNo', $label, 'modal-account') }}
+                        @if ($jr=='AR') 
+                            {{ Form::textwlookup('AccCode', 'Payment From', 'modal-customer') }}
+                        @else
+                            {{ Form::textwlookup('AccCode', 'Payment From', 'modal-supplier') }}
+                        @endif
+                    </div>
+                </div>
+                -->
                 
                 <div id="xgrid" class="ag-theme-alpine w-100 my-2" style="height: 300px;"></div>
                 {{ Form::hidden('detail', '') }}   
@@ -85,17 +99,16 @@
 @stop
 
 @section('modal')
-   {{-- @include('modal.modal-customer')  --}}
-   {{-- @include('modal.modal-supplier')  --}}
+   @include('modal.modal-customer') 
+   @include('modal.modal-supplier') 
    @include('modal.modal-account') 
-   {{-- @include('modal.modal-invoice-unpaid')  --}}
+   @include('modal.modal-invoice-unpaid') 
 @stop
                     
 @section('js')
     <script src="{{ asset('assets/plugin/ag-grid/ag-grid-community.min.noStyle.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/textwlookup.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/lookup/lookup.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/js/helper_form.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/helper_grid.js') }}" type="text/javascript"></script>
     
     <script>
@@ -103,7 +116,7 @@
         var selRow = null;
         var selModal = null;
         var lookup_target_button = null;
-
+        
         //load data
         var mydata = {!! json_encode($griddata) !!}
 
@@ -129,16 +142,16 @@
             editType: 'fullRow',
             rowSelection: 'single',
             onRowEditingStarted: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onRowEditingStopped: (event) => {
-                //console.log('never called - not doing row editing');
+                console.log('never called - not doing row editing');
             },
             onCellEditingStarted: (event) => {
-                //console.log('cellEditingStarted');
+                console.log('cellEditingStarted');
             },
             onCellEditingStopped: (event) => {
-                //console.log('cellEditingStopped');
+                console.log('cellEditingStopped');
             },
             onGridReady: function (params) {
                 sequenceId = 1;
@@ -159,50 +172,7 @@
         $(document).ready(function() {
             //init page
             $(':input[type=number]').on('mousewheel',function(e){ $(this).blur();  });
-            {{-- $('select.select2').select2({ theme: "bootstrap" }); --}}
-
-            //init select box
-            /*
-            var selData = [
-                ['AccCode', 'Customer/Supplier'],
-                ['toAccNo', 'Bank Account #'],
-            ];
-            selData[0]['AccCode'] = ('{{$jr}}'=='AR')? 'Customer':'Supplier';
-            for(let dt of selData) {
-                $('select#'+dt[0]).select2({
-                    placeholder: `Choose a ${dt[1]}`,
-                    templateResult: function(data) {
-                        var str = data.text.split('|')
-                        //if str[0]=='-' str[1]='-';
-                        var result = jQuery(
-                        '<div class="row">' +
-                            '<div class="col-md-3">' + str[0] + '</div>' +
-                            '<div class="col-md-9">' + str[1] + '</div>' +
-                        '</div>'
-                        );
-                        return result;
-                    },
-                });
-            }
-            */
-
-            /*@if($jr=='AP')
-                //$('select#AccCode').mselect2("{{ env('API_URL') }}/api/select/supplier", 'Supplier');
-                $('select#AccCode').mselect2("supplier", 'Supplier');
-            @else
-                //$('select#AccCode').mselect2("{{ env('API_URL') }}/api/select/customer", 'Customer');
-                $('select#AccCode').mselect2("customer", 'Customer');
-            @endif
-            */
-            //$('select#AccNo').mselect2("{{ env('API_URL') }}/api/select/coa?catname={{ urlencode('Cash & Bank') }}", 'Cash & Bank' );
-            //$('select#AccNo').mselect2("coa?catname={{ urlencode('Cash & Bank') }}", 'Cash & Bank' );
-            $('select#AccNo').mselect2("coa", 'Cash & Bank' );
-            //$('select#AccNo').select2('val','11100').trigger('change');
-            //$('select#AccNo').select2('val',11200);
-            //$('select#AccNo').val('11200');
-            $('select#AccNo').data('select2').trigger('select', {
-                data: {"id": 11200, "text": 'test11200' }
-            });
+            $('select.select2').select2({ theme: "bootstrap" });
             
             var selRow =[];
             var xgd =  document.querySelector('#xgrid');
@@ -234,29 +204,17 @@
                 
                 var formdata=$('form').serialize();
                 $('#formData').submit();
-            });
-            $("button#cmSave").click(async function(e){ //using ajax
-                e.preventDefault();
-                var formdata=$('form').serialize();
-                //var result = await $('form').formsave('{{$jr}}', '{{$id}}' );
-
-                var id = '{{$id}}';
-                var resp = await axios.post(window.API_URL+"/api/{{$jr}}/save/"+id, formdata);
-                console.log(resp)
-                if (resp.status==200) {
-                    alert('datasave.')
-                    if (id=='new' || id=='') window.location.href = window.location.href.replace("/new", "/"+resp.data.data.id);
-                } else {
-                    console.log(resp)
-                }
+                
             });
 
             $('.modal').on('show.bs.modal', function (e) {
                 lookup_target_button = $(e.relatedTarget) // Button that triggered the modal
+                //console.log(lookup_target_button)
             })
         });
 
         function afterModalClose(sel) {
+            //console.log(sel)
             if (sel.selModal=='modal-customer' || sel.selModal=='modal-supplier') {
                 var btn = lookup_target_button;
                 $('#'+btn.attr('id')).textwlookup(sel.selRow[0], sel.selRow[1])
