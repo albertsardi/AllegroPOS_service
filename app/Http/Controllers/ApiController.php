@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Input;
 // use HTML;
 // use Validator;
 // use SSP;
+use App\Http\Model\CustomerSupplier;
 use App\Http\Model\Common;
 use App\Http\Model\Product;
 use App\Http\Model\Account;
@@ -391,7 +392,8 @@ class ApiController extends MainController {
 					$r->Qty = 1234567890;
 				}
 			}
-			return json_encode($dat);
+			//return json_encode($dat);
+			return response($dat, 200)->header('Content-Type', 'text/html');
 		}
 		catch (Exception $e) {
 			DB::rollback();
@@ -400,34 +402,54 @@ class ApiController extends MainController {
   		}
     }
     function getCustomer($id='') {
-         $dat['status']= 'OK';
-         if($id<>'') {
-            $dat['data']= Account::where('AccCode', $id)->first();
-            $dat['data']->Bal=1234567890;
-            //add addr
-            //$addr=['Alamat'=>'xxxxxxxxxxxxxxxxxxxxx','City'=>'yyyyyyyyyyyyyyyyyyyyy'];
-            $addr=['Alamat'=>'xxxxxxxxxxxxxxxxxxxxx'];
-            $dat['data']['addr']= $addr;
-         } else {
-            $dat['data']= Account::all();
-            foreach($dat['data'] as $r) {
-               $r->Bal = 1234567890;
-            }
-         }
-         return json_encode($dat);
+        //return 'customer' ;
+		try {
+			$dat = [];
+			$dat['status']= 'OK';
+			if($id<>'') {
+				$dat['data']= CustomerSupplier::where('AccCode', $id)->first();
+				$dat['data']->Bal=1234567890;
+				//add addr
+				//$addr=['Alamat'=>'xxxxxxxxxxxxxxxxxxxxx','City'=>'yyyyyyyyyyyyyyyyyyyyy'];
+			} else {
+				$dat['data']= CustomerSupplier::where('AccType','C')->get();
+				foreach($dat['data'] as $r) {
+				$r->Bal = 1234567890;
+				}
+			}
+			//return json_encode($dat);
+			return response($dat, 200)->header('Content-Type', 'text/html');
+		}
+		catch (Exception $e) {
+			DB::rollback();
+			console.log(['save Error', $e->getMessage()]);
+			//return redirect(url( "setting" ))->with('error', $e->getMessage());
+	  	}
     }
     function getSupplier($id='') {
-        $dat['status']= 'OK';
-        if($id<>'') {
-            $dat['data']= Account::where('AccCode', $id)->first();
-            $dat['data']->Bal=1234567890;
-        } else {
-            $dat['data']= Account::all();
-            foreach($dat['data'] as $r) {
-               $r->Bal = 1234567890;
-            }
-         }
-        return json_encode($dat);
+        //return 'supplier' ;
+		try {
+			$dat = [];
+			$dat['status']= 'OK';
+			if($id<>'') {
+				$dat['data']= CustomerSupplier::where('AccCode', $id)->first();
+				$dat['data']->Bal=1234567890;
+				//add addr
+				//$addr=['Alamat'=>'xxxxxxxxxxxxxxxxxxxxx','City'=>'yyyyyyyyyyyyyyyyyyyyy'];
+			} else {
+				$dat['data']= CustomerSupplier::where('AccType','S')->where('Active',1)->get();
+				foreach($dat['data'] as $r) {
+				$r->Bal = 1234567890;
+				}
+			}
+			//return json_encode($dat);
+			return response($dat, 200)->header('Content-Type', 'text/html');
+		}
+		catch (Exception $e) {
+			DB::rollback();
+			console.log(['save Error', $e->getMessage()]);
+			//return redirect(url( "setting" ))->with('error', $e->getMessage());
+	  	}
    }
 
    // Trans form load

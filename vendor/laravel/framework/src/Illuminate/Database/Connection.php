@@ -668,7 +668,9 @@ class Connection implements ConnectionInterface
         // message to include the bindings with SQL, which will make this exception a
         // lot more helpful to the developer instead of just the database's errors.
         catch (Exception $e) {
+            //return dd($e);
             throw new QueryException(
+                
                 $query, $this->prepareBindings($bindings), $e
             );
         }
