@@ -393,12 +393,14 @@ class ApiController extends MainController {
 				}
 			}
 			//return json_encode($dat);
-			return response($dat, 200)->header('Content-Type', 'text/html');
+			//return response($dat, 200)->header('Content-Type', 'text/html');
+            return response()->json($dat);
 		}
 		catch (Exception $e) {
 			DB::rollback();
 			console.log(['save Error', $e->getMessage()]);
 			//return redirect(url( "setting" ))->with('error', $e->getMessage());
+
   		}
     }
     function getCustomer($id='') {
@@ -418,7 +420,8 @@ class ApiController extends MainController {
 				}
 			}
 			//return json_encode($dat);
-			return response($dat, 200)->header('Content-Type', 'text/html');
+			//return response($d at, 200)->header('Content-Type', 'text/html');
+            return response()->json($dat);
 		}
 		catch (Exception $e) {
 			DB::rollback();
@@ -443,13 +446,18 @@ class ApiController extends MainController {
 				}
 			}
 			//return json_encode($dat);
-			return response($dat, 200)->header('Content-Type', 'text/html');
+			//return response($dat, 200)->header('Content-Type', 'text/html');
+			return response()->json($dat);
 		}
 		catch (Exception $e) {
 			DB::rollback();
 			console.log(['save Error', $e->getMessage()]);
 			//return redirect(url( "setting" ))->with('error', $e->getMessage());
 	  	}
+   }
+
+   function saveProduct(Request $req) {
+           
    }
 
    // Trans form load

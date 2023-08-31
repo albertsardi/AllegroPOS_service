@@ -19,7 +19,21 @@ use App\Http\Controllers\ApiController;
 //Auth::routes(['verify' => true]);
 
 Route::prefix('api')->group(function() {
-    
+    // form master load
+    Route::get('product/{id?}', 'ApiController@getProduct');
+    Route::get('customer/{id?}', 'ApiController@getCustomer');
+    Route::get('supplier/{id?}', 'ApiController@getSupplier');
+    Route::get('coa/{id?}', 'ApiController@getCoa');
+
+    // data save
+    Route::prefix('datasave')->group(function() {
+        Route::post('/', 'TransController@datasave_PI');
+        Route::post('product', 'MasterController@datasave_product');
+        Route::post('customer', 'MasterController@datasave_customer');
+        Route::post('supplier', 'MasterController@datasave_supplier');
+        Route::post('PI', 'TransController@datasave_PI');
+    });
+
     //route send receive mail
     Route::prefix('mail')->group(function() {
         //chart in dashboard
@@ -27,21 +41,12 @@ Route::prefix('api')->group(function() {
         //Route::any('receive', 'MailController@datasave');
     });
 
-    // form master load
-    Route::get('product/{id?}', 'ApiController@getProduct');
-    Route::get('customer/{id?}', 'ApiController@getCustomer');
-    Route::get('supplier/{id?}', 'ApiController@getSupplier');
-    Route::get('coa/{id?}', 'ApiController@getCoa');
+    
 
      // select2 / combobox
      Route::get('select/{jr}', 'SelectController@getSelectData');
 
-    // data save
-    Route::prefix('datasave')->group(function() {
-        Route::post('/', 'TransController@datasave_PI');
-        Route::post('product', 'MasterController@datasave_product');
-        Route::post('PI', 'TransController@datasave_PI');
-    });
+    
 
     Route::post('transsave', 'TransController@transsave');
 
